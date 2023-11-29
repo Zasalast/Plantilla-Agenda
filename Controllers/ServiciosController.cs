@@ -42,16 +42,29 @@ namespace Plantilla_Agenda.Controllers
         {
             try
             {
-                ConfiguracionDB conf = new(Conexiondb);
-                String sql = "INSERT INTO servicios ( Nombre) VALUES (@Nombre);";
-                List<MySqlParameter> lista = new List<MySqlParameter>();
-                
-                lista.Add(new MySqlParameter("@Nombre", servicio.Nombre));
-         
-                conf.conec();
-                conf.EjecutarOperacion(sql, lista, CommandType.Text);
-                return RedirectToAction("Home", "Home");
-                //return RedirectToAction(nameof(Index));
+                using (var connection = new MySqlConnection(Conexiondb.Conexiondb))
+                {
+                    connection.Open();
+                    // ConfiguracionDB conf = new(Conexiondb);
+                    String sql = "INSERT INTO servicios (Nombre) VALUES (@Nombre);";
+                    var command = new MySqlCommand(sql, connection);
+                    command.Parameters.AddWithValue("@Nombre", servicio.Nombre);
+                    int rowsAffected = command.ExecuteNonQuery();
+                    if (rowsAffected > 0)
+                    {
+                        // Inserción exitosa
+                        Console.WriteLine("El servicio se creo correctamente");
+                    }
+                    connection.Close();
+                    //List<MySqlParameter> lista = new List<MySqlParameter>();
+
+                    //lista.Add(new MySqlParameter("@Nombre", servicio.Nombre));
+
+                    //  conf.conec();
+                    // conf.EjecutarOperacion(sql, lista, CommandType.Text);
+                    return RedirectToAction("Index", "home");
+                    //return RedirectToAction(nameof(Index));
+                }
             }
             catch (Exception ex)
             {
