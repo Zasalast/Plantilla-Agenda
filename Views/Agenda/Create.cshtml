@@ -1,0 +1,75 @@
+﻿@model Plantilla_Agenda.Models.Agenda
+ 
+
+@{
+    ViewData["Title"] = "CreateAgenda";
+}
+
+<h1>CreateAgenda</h1>
+
+<h4>Agenda</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="CreateAgenda">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            
+            @*   <div class="form-group">*@
+            <label asp-for="IdSede" class="control-label"></label>
+           @*     <select asp-for="IdSede" class="form-control">
+                    <option value="">Seleccione una sede...</option>
+                    @foreach (var sede in Models.Sede)
+                    {
+                        <option value="@sede.IdSede">@sede.Nombre</option>
+                    }
+                </select>
+                <span asp-validation-for="IdSede" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="IdServicio" class="control-label"></label>
+                <select asp-for="IdSede" class="form-control">
+                    <option value="">Seleccione una sede...</option>
+                    @foreach (var sede in Model)
+                    {
+                        <option value="@sede.IdSede">@sede.Nombre</option>
+                    }
+                </select>
+                <span asp-validation-for="IdServicio" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="IdHorario" class="control-label"></label>
+                <select asp-for="IdHorario" class="form-control">
+                    <option value="">Seleccione una Hora...</option>
+                    @foreach (var horario in Model.Horario)
+                {
+                    <option value="@Horario.IdHorario">@Horario.HoraInicio</option>
+                }
+                </select>
+                 
+                <span asp-validation-for="IdHorario" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="IdProfesional" class="control-label"></label>
+                <select asp-for="IdProfesional" class="form-control">
+                    <option value="">Seleccione un Profesional...</option>
+                    @foreach (var profesional in Model)
+                    {
+                        <option value="@profesional.IdProfesional">@sede.Nombre</option>
+                    }
+                </select>
+                <span asp-validation-for="IdProfesional" class="text-danger"></span>
+                </div>*@
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
