@@ -215,15 +215,15 @@ namespace Plantilla_Agenda.Controllers
                         connection.Open();
 
                         // Ajusta esta consulta para que inserte los datos de la agenda con los Id seleccionados
-                        string sql = "INSERT INTO agendamientos (IdCliente, Fecha, Hora, Estado, IdAgenda) " +
-                                     "VALUES (@IdCliente, @Fecha, @Hora, @Estado, @IdAgenda)";
+                        string sql = "INSERT INTO agendamientos (IdProfesional, IdHorario, IdSede,   IdServicio) " +
+                                     "VALUES (@IdProfesional, @IdHorario, @IdSede, @IdServicio)";
 
                         var command = new MySqlCommand(sql, connection);
                         command.Parameters.AddWithValue("@IdProfesional", agenda.IdProfesional);
                         command.Parameters.AddWithValue("@IdHorario", agenda.IdHorario);
                         command.Parameters.AddWithValue("@IdSede", agenda.IdSede);
                         command.Parameters.AddWithValue("@IdServicio", agenda.IdServicio);
-                        command.Parameters.AddWithValue("@estado", agenda.Estado);
+                       
 
                         int rowsAffected = command.ExecuteNonQuery();
 
