@@ -11,5 +11,7 @@ namespace Plantilla_Agenda.Models
         public DateTime? FechaHora { get; set; }
         public string Motivo { get; set; }
         public int IdAgendamiento { get; set; }
+
+        public List<Agendamiento>? Agendamientos { get; set; }
     }
 }

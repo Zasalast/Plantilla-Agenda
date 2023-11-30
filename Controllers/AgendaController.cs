@@ -31,15 +31,24 @@ namespace Plantilla_Agenda.Controllers
         // GET: AgendaController/Create
         public ActionResult Create()
         {
-            var agenda = new Agenda
+            try
             {
-                Sedes = ObtenerSedes(),
-                Servicioss = ObtenerServicios(),
-                Horarios = ObtenerHorarios(),
-                Personas = ObtenerProfesionales()
-            };
+                var agenda = new Agenda
+                {
+                    Sedes = ObtenerSedes() ?? new List<Sede>(),
+                    Servicioss = ObtenerServicios() ?? new List<Servicio>(),
+                    Horarios = ObtenerHorarios() ?? new List<Horario>(),
+                    Personas = ObtenerProfesionales() ?? new List<Persona>()
+                };
 
-            return View(agenda);
+                return View(agenda);
+            }
+            catch (Exception ex)
+            {
+                // Manejar la excepción, puedes imprimir el error o registrar en un sistema de registro.
+                Console.WriteLine("Error en la acción Create: " + ex.Message);
+                return View(new Agenda()); // Otra opción sería redirigir a una página de error.
+            }
         }
 
         private List<Sede> ObtenerSedes()

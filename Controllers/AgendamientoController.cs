@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using MySql.Data.MySqlClient;
 using Plantilla_Agenda.Data;
+using Plantilla_Agenda.Models;
 
 namespace Plantilla_Agenda.Controllers
 {
@@ -38,16 +40,39 @@ namespace Plantilla_Agenda.Controllers
         // POST: AgendamientoController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public ActionResult Create(Models.Agendamiento agendamiento)
         {
+            
             try
             {
-                String sql = "INSERT INTO agendamientos (IdCliente, Fecha, Hora, Estado, IdAgenda)\r\nVALUES (1, '2023-12-01', '09:00:00', 'v', 2);";
+                using (var connection = new MySqlConnection(Conexiondb.Conexiondb))
+                {
+                    connection.Open();
+                    string sql = "INSERT INTO agendamientos (IdCliente, Fecha, Hora, Estado, IdAgenda)\r\nVALUES (1, '2023-12-01', '09:00:00', 'v', 2);";
 
-                return RedirectToAction(nameof(Index));
+                     
+                    var command = new MySqlCommand(sql, connection);
+                    command.Parameters.AddWithValue("@IdCliente", agendamiento.IdCliente);
+                    command.Parameters.AddWithValue("@Fecha", agendamiento.Fecha);
+                    command.Parameters.AddWithValue("@Hora", agendamiento.Hora);
+                    command.Parameters.AddWithValue("@Estado", agendamiento.Estado);
+                    command.Parameters.AddWithValue("@IdAgenda", agendamiento.IdAgenda);
+                    int rowsAffected = command.ExecuteNonQuery();
+                    if (rowsAffected > 0)
+                    {
+
+                        Console.WriteLine("El servicio se creo correctamente");
+                    }
+                    connection.Close();
+
+                    return RedirectToAction("Index", "home");
+
+                }
             }
-            catch
+            catch (Exception ex)
             {
+                Console.WriteLine("El servicio no se creo correctamente");
+                TempData["El servicio se no se Creo"] = ex.Message;
                 return View();
             }
         }

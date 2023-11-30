@@ -11,5 +11,6 @@ namespace Plantilla_Agenda.Models
 
 
         public int IdPermiso { get; set; }
+
     }
 }

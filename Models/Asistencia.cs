@@ -10,5 +10,6 @@ namespace Plantilla_Agenda.Models
         public int IdAsistencia { get; set; }
         public char? EstadoAsistencia { get; set; }
         public int? IdAgendamiento { get; set; }
+        public List<Agendamiento>? Agendamientos { get; set; }
     }
 }
