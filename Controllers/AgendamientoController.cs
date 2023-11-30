@@ -42,6 +42,8 @@ namespace Plantilla_Agenda.Controllers
         {
             try
             {
+                String sql = "INSERT INTO agendamientos (IdCliente, Fecha, Hora, Estado, IdAgenda)\r\nVALUES (1, '2023-12-01', '09:00:00', 'v', 2);";
+
                 return RedirectToAction(nameof(Index));
             }
             catch
@@ -53,6 +55,8 @@ namespace Plantilla_Agenda.Controllers
         // GET: AgendamientoController/Edit/5
         public ActionResult Edit(int id)
         {
+            
+
             return View();
         }
 
@@ -63,6 +67,8 @@ namespace Plantilla_Agenda.Controllers
         {
             try
             {
+                String sql = "UPDATE agendamientos SET Estado = 'c' WHERE IdAgendamiento = 3;"; 
+                String sql2 = "DELETE FROM agendamientos\r\nWHERE IdAgendamiento = 4;";
                 return RedirectToAction(nameof(Index));
             }
             catch

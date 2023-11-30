@@ -22,6 +22,7 @@ namespace Plantilla_Agenda.Controllers
 
         public IActionResult RegistroPersona()
         {
+            string sql = "INSERT INTO permisos (Nombre)\r\nVALUES ('Crear Agenda'), ('Eliminar Agenda'), ('Editar Agenda');";
             return View();
         }
  

@@ -1,4 +1,4 @@
-﻿@model Plantilla_Agenda.Models.Agendamiento
+﻿@model Plantilla_Agenda.Models.Agenda
 
 @{
     ViewData["Title"] = "Create";
@@ -11,47 +11,32 @@
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Create">
+            <div class="form-group">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="IdAgendamiento" class="control-label"></label>
-                <input asp-for="IdAgendamiento" class="form-control" />
-                <span asp-validation-for="IdAgendamiento" class="text-danger"></span>
+
+                <label asp-for="IdSede" class="control-label">Sede</label>
+                <select asp-for="IdSede" class="form-control" asp-items="@Model.Sedes.Select(s => new SelectListItem { Value = s.IdSede.ToString(), Text = s.Direccion })"></select>
             </div>
+
             <div class="form-group">
-                <label asp-for="IdCliente" class="control-label"></label>
-                <input asp-for="IdCliente" class="form-control" />
-                <span asp-validation-for="IdCliente" class="text-danger"></span>
+                <label asp-for="IdServicio" class="control-label">Servicio</label>
+                <select asp-for="IdServicio" class="form-control" asp-items="@Model.Servicioss.Select(s => new SelectListItem { Value = s.IdServicio.ToString(), Text = s.Nombre })"></select>
             </div>
+
             <div class="form-group">
-                <label asp-for="Fecha" class="control-label"></label>
-                <input asp-for="Fecha" class="form-control" />
-                <span asp-validation-for="Fecha" class="text-danger"></span>
+                <label asp-for="IdHorario" class="control-label">Horario</label>
+                <select asp-for="IdHorario" class="form-control" asp-items="@Model.Horarios.Select(h => new SelectListItem { Value = h.IdHorario.ToString(), Text = ""+h.HoraInicio })"></select>
             </div>
+
             <div class="form-group">
-                <label asp-for="Hora" class="control-label"></label>
-                <input asp-for="Hora" class="form-control" />
-                <span asp-validation-for="Hora" class="text-danger"></span>
+                <label asp-for="IdProfesional" class="control-label">Profesional</label>
+                <select asp-for="IdProfesional" class="form-control" asp-items="@Model.Personas.Select(p => new SelectListItem { Value = p.IdPersona.ToString(), Text = p.PrimerApellido})"></select>
             </div>
-            <div class="form-group">
-                <label asp-for="Estado" class="control-label"></label>
-                <input asp-for="Estado" class="form-control" />
-                <span asp-validation-for="Estado" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="IdAgenda" class="control-label"></label>
-                <input asp-for="IdAgenda" class="form-control" />
-                <span asp-validation-for="IdAgenda" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="IdCancelacion" class="control-label"></label>
-                <input asp-for="IdCancelacion" class="form-control" />
-                <span asp-validation-for="IdCancelacion" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="IdReserva" class="control-label"></label>
-                <input asp-for="IdReserva" class="form-control" />
-                <span asp-validation-for="IdReserva" class="text-danger"></span>
-            </div>
+
+
+
+          
+
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>

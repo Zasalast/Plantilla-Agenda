@@ -8,12 +8,12 @@ using System.Data;
 
 namespace Plantilla_Agenda.Controllers
 {
-    public class ServiciosController : Controller
+    public class ServicioController : Controller
     {
         private readonly ContextoDB Conexiondb;
 
 
-        public ServiciosController(ContextoDB contexto)
+        public ServicioController(ContextoDB contexto)
         {
             Conexiondb = contexto;
         }
@@ -38,37 +38,32 @@ namespace Plantilla_Agenda.Controllers
         // POST: ServicioController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(Models.Servicios servicio)
+        public ActionResult Create(Models.Servicio servicio)
         {
             try
             {
                 using (var connection = new MySqlConnection(Conexiondb.Conexiondb))
                 {
                     connection.Open();
-                    // ConfiguracionDB conf = new(Conexiondb);
+                 
                     String sql = "INSERT INTO servicios (Nombre) VALUES (@Nombre);";
                     var command = new MySqlCommand(sql, connection);
                     command.Parameters.AddWithValue("@Nombre", servicio.Nombre);
                     int rowsAffected = command.ExecuteNonQuery();
                     if (rowsAffected > 0)
                     {
-                        // Inserción exitosa
+                  
                         Console.WriteLine("El servicio se creo correctamente");
                     }
                     connection.Close();
-                    //List<MySqlParameter> lista = new List<MySqlParameter>();
-
-                    //lista.Add(new MySqlParameter("@Nombre", servicio.Nombre));
-
-                    //  conf.conec();
-                    // conf.EjecutarOperacion(sql, lista, CommandType.Text);
+                 
                     return RedirectToAction("Index", "home");
-                    //return RedirectToAction(nameof(Index));
+          
                 }
             }
             catch (Exception ex)
             {
-
+                Console.WriteLine("El servicio no se creo correctamente");
                 TempData["El servicio se no se Creo"] = ex.Message;
                 return View();
             }
