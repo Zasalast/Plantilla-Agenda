@@ -1,10 +1,13 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Plantilla_Agenda.Data;
+using Plantilla_Agenda.Models;
+using Plantilla_Agenda.Repositories;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
-
+builder.Services.AddScoped<AgendaRepository, AgendaRepository>();
 builder.Services.AddSingleton(new ContextoDB(builder.Configuration.GetConnectionString("Conexiondb")));
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(o =>

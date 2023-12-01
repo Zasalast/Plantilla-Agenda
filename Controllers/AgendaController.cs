@@ -1,20 +1,26 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using MySql.Data.MySqlClient;
+using NuGet.Protocol.Plugins;
 using Plantilla_Agenda.Data;
 using Plantilla_Agenda.Models;
- 
+using Plantilla_Agenda.Repositories;
+
 
 namespace Plantilla_Agenda.Controllers
 {
     public class AgendaController : Controller
     {
-        private readonly ContextoDB Conexiondb;
-
-        public AgendaController(ContextoDB contexto)
+        private   MySqlCommand command;
+        private   ContextoDB Conexiondb;
+        private   AgendaRepository _agendaRepository;
+         
+        public AgendaController(ContextoDB contexto, AgendaRepository agendaRepository)
         {
             Conexiondb = contexto;
-        }
+            _agendaRepository = agendaRepository;
+         }
 
         // GET: AgendaController
         public ActionResult Index()
@@ -31,32 +37,31 @@ namespace Plantilla_Agenda.Controllers
         // GET: AgendaController/Create
         public ActionResult Create()
         {
-            try
-            {
-                var agenda = new Agenda
-                {
-                    Sedes = ObtenerSedes() ?? new List<Sede>(),
-                    Servicioss = ObtenerServicios() ?? new List<Servicio>(),
-                    Horarios = ObtenerHorarios() ?? new List<Horario>(),
-                    Personas = ObtenerProfesionales() ?? new List<Persona>()
-                };
+            var sedes = _agendaRepository.GetSedes();
+            var servicios = _agendaRepository.GetServicios();
+            var horarios = _agendaRepository.GetHorarios();
+            var profesionales = _agendaRepository.GetProfesionales();
 
-                return View(agenda);
-            }
-            catch (Exception ex)
+            var model = new AgendaCreateViewModel
             {
-                // Manejar la excepción, puedes imprimir el error o registrar en un sistema de registro.
-                Console.WriteLine("Error en la acción Create: " + ex.Message);
-                return View(new Agenda()); // Otra opción sería redirigir a una página de error.
-            }
+                Sedes = new SelectList(sedes, "IdSede", "Direccion"),
+                Servicios = new SelectList(servicios, "IdServicio", "Nombre"),
+                Horarios = new SelectList(horarios, "IdHorario", "HoraInicio"),
+                Personas = new SelectList(profesionales, "IdPersona", "PrimerNombre"),
+            };
+
+            return View(model);
         }
+
 
         private List<Sede> ObtenerSedes()
         {
             List<Sede> sedes = new List<Sede>();
-
             try
             {
+                
+
+            
                 using (var connection = new MySqlConnection(Conexiondb.Conexiondb))
                 {
                     connection.Open();
@@ -213,12 +218,15 @@ namespace Plantilla_Agenda.Controllers
         // POST: AgendaController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(Models.Agenda agenda)
+        public ActionResult Create(AgendaCreateViewModel model)
         {
             try
             {
                 if (ModelState.IsValid)
                 {
+                    var agenda = new Agenda();
+                    agenda.IdSede = model.IdSede;
+                    agenda.IdServicio = model.IdServicio;
                     using (var connection = new MySqlConnection(Conexiondb.Conexiondb))
                     {
                         connection.Open();
@@ -244,16 +252,17 @@ namespace Plantilla_Agenda.Controllers
                         connection.Close();
                         return RedirectToAction(nameof(Index));
                     }
+                    _agendaRepository.CrearAgenda(agenda);
                 }
-
+                
                 // Si el modelo no es válido, vuelve a la vista con los errores
-                return View(agenda);
+                return RedirectToAction("Index");
             }
             catch (Exception ex)
             {
                 Console.WriteLine("El servicio no se creó correctamente");
                 TempData["El servicio no se Creó"] = ex.Message;
-                return View();
+                return View(model);
             }
         }
 

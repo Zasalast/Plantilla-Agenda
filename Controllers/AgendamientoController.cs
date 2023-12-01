@@ -48,15 +48,22 @@ namespace Plantilla_Agenda.Controllers
                 using (var connection = new MySqlConnection(Conexiondb.Conexiondb))
                 {
                     connection.Open();
-                    string sql = "INSERT INTO agendamientos (IdCliente, Fecha, Hora, Estado, IdAgenda)\r\nVALUES (1, '2023-12-01', '09:00:00', 'v', 2);";
+                    string sql = "INSERT INTO agendamientos (IdCliente, Fecha, Hora, Estado, IdAgenda)\r\nVALUES (@IdCliente, @Fecha, @Hora, @Estado, @IdAgenda);";
 
                      
                     var command = new MySqlCommand(sql, connection);
-                    command.Parameters.AddWithValue("@IdCliente", agendamiento.IdCliente);
-                    command.Parameters.AddWithValue("@Fecha", agendamiento.Fecha);
-                    command.Parameters.AddWithValue("@Hora", agendamiento.Hora);
-                    command.Parameters.AddWithValue("@Estado", agendamiento.Estado);
-                    command.Parameters.AddWithValue("@IdAgenda", agendamiento.IdAgenda);
+                    /* command.Parameters.AddWithValue("@IdCliente", agendamiento.IdCliente);
+                     command.Parameters.AddWithValue("@Fecha", agendamiento.Fecha);
+                     command.Parameters.AddWithValue("@Hora", agendamiento.Hora);
+                     command.Parameters.AddWithValue("@Estado", agendamiento.Estado);
+                     command.Parameters.AddWithValue("@IdAgenda", agendamiento.IdAgenda);
+                    */
+
+                    command.Parameters.AddWithValue("@IdCliente", "1");
+                    command.Parameters.AddWithValue("@Fecha", "'2023-12-01'");
+                    command.Parameters.AddWithValue("@Hora", "'09:00:00'");
+                    command.Parameters.AddWithValue("@Estado", "'v'");
+                    command.Parameters.AddWithValue("@IdAgenda", "2");
                     int rowsAffected = command.ExecuteNonQuery();
                     if (rowsAffected > 0)
                     {
