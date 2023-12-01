@@ -1,10 +1,10 @@
 ﻿@model IEnumerable<Plantilla_Agenda.Models.Agenda>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "List";
 }
 
-<h1>Index</h1>
+<h1>List</h1>
 
 <p>
     <a asp-action="Create">Create New</a>
@@ -31,29 +31,30 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.IdAgenda)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IdSede)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IdServicio)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IdHorario)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IdProfesional)
-            </td>
-            <td>
-                @Html.ActionLink("Edit", "Edit", new {  id=item.IdAgenda  }) |
-                    @Html.ActionLink("Details", "Details", new { id = item.IdAgenda }) |
-                    @Html.ActionLink("Delete", "Delete", new { id = item.IdAgenda })
-            </td>
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.IdAgenda)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.IdSede)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.IdServicio)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.IdHorario)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.IdProfesional)
+                </td>
+                <td>
+                    @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
+                    @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
+                    @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+                </td>
+            </tr>
+        }
     </tbody>
 </table>

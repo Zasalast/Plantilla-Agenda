@@ -19,7 +19,7 @@ namespace Plantilla_Agenda.Models
         public string TipoDocumento { get; set; }
         public string Identificacion { get; set; }     
         public int IdRol { get; set; }
-        
+        public string NombreCompleto { get { return string.Format("{0} {1}", PrimerNombre, PrimerApellido); } }
         [NotMapped]
         public bool MantenerActivo { get; set; }
     }

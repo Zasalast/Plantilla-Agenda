@@ -1,151 +1,117 @@
 ﻿using MySql.Data.MySqlClient;
 using Plantilla_Agenda.Data;
+using System;
+using System.Collections.Generic;
 using System.Data;
 
 namespace Plantilla_Agenda.Servicios
 {
     public class ConfiguracionDB
     {
-
-        MySqlConnection conex;
-
-        private readonly ContextoDB _contextodb;
+        private MySqlConnection _conexion;
+        private readonly ContextoDB _contextoDB;
 
         public ConfiguracionDB(ContextoDB contextoDB)
         {
-            _contextodb = contextoDB;
+            _contextoDB = contextoDB;
+            _conexion = new MySqlConnection(_contextoDB.Conexiondb);
         }
 
-        public void conec()
-        {
-            conex = new MySqlConnection(_contextodb.Conexiondb);
-        }
         public bool Conectar()
         {
-            conec();
             try
             {
-                conex.Open();
-                if (conex.State == ConnectionState.Open)
-                {
-                    // La conexión se ha establecido correctamente
-                    return true;
-                }
-                else
-                {
-                    // La conexión no se ha abierto correctamente
-                    return false;
-                }
+                _conexion.Open();
+                return _conexion.State == ConnectionState.Open;
             }
-            catch (Exception exc)
+            catch (Exception)
             {
-
                 return false;
             }
-
         }
 
-        /* private  MySqlConnection ConexionMySlq()
-         {
-             MySqlConnection Conexion = new MySqlConnection(ConfigurationManager.ConnectionStrings["ConexionMysql"].ConnectionString);
-
-             try
-             {
-                 Conexion.Open();
-             }
-             catch
-             {
-                 return null;
-             }
-
-             return Conexion;
-         }
-         */
         public void Desconectar()
         {
-            conex.Close();
+            _conexion.Close();
         }
 
-        public int RetornarValidacion(string sentencia, List<MySqlParameter> ListaParametros, CommandType TipoComando)
+        public int RetornarValidacion(string sentencia, List<MySqlParameter> listaParametros, CommandType tipoComando)
         {
-            MySqlCommand comando = new MySqlCommand();
-            comando.CommandText = sentencia;
-            comando.CommandType = TipoComando;
-            comando.Connection = conex;
-            foreach (MySqlParameter parametro in ListaParametros)
+            using (MySqlCommand comando = new MySqlCommand(sentencia, _conexion))
             {
-                comando.Parameters.Add(parametro);
+                comando.CommandType = tipoComando;
+                comando.Parameters.AddRange(listaParametros.ToArray());
+                Conectar();
+                return Convert.ToInt32(comando.ExecuteScalar());
             }
-            int count = Convert.ToInt32(comando.ExecuteScalar());
-
-            Desconectar();
-            return count;
         }
 
-
-        public void EjecutarOperacion(string sentencia, List<MySqlParameter> ListaParametros, CommandType TipoComando)
+        public void EjecutarOperacion(string sentencia, List<MySqlParameter> listaParametros, CommandType tipoComando)
         {
-            MySqlCommand comando = new MySqlCommand();
-            comando.CommandText = sentencia;
-            comando.CommandType = TipoComando;
-            comando.Connection = conex;
-            foreach (MySqlParameter parametro in ListaParametros)
+            using (MySqlCommand comando = new MySqlCommand(sentencia, _conexion))
             {
-                comando.Parameters.Add(parametro);
+                comando.CommandType = tipoComando;
+                comando.Parameters.AddRange(listaParametros.ToArray());
+                Conectar();
+                comando.ExecuteNonQuery();
             }
-            comando.ExecuteNonQuery();
-            Desconectar();
         }
 
-        public DataTable EjecutarConsulta(string sentencia, List<MySqlParameter> ListaParametros, CommandType TipoComando)
+        public DataTable EjecutarConsulta(string sentencia, List<MySqlParameter> listaParametros, CommandType tipoComando)
         {
-            MySqlDataAdapter adaptador = new MySqlDataAdapter();
-            adaptador.SelectCommand = new MySqlCommand(sentencia, conex);
-            adaptador.SelectCommand.CommandType = TipoComando;
-
-            foreach (MySqlParameter parametro in ListaParametros)
+            using (MySqlDataAdapter adaptador = new MySqlDataAdapter())
             {
-                adaptador.SelectCommand.Parameters.Add(parametro);
+                adaptador.SelectCommand = new MySqlCommand(sentencia, _conexion);
+                adaptador.SelectCommand.CommandType = tipoComando;
+                adaptador.SelectCommand.Parameters.AddRange(listaParametros.ToArray());
+
+                DataSet resultado = new DataSet();
+                Conectar();
+                adaptador.Fill(resultado);
+                return resultado.Tables[0];
             }
-            DataSet resultado = new DataSet();
-            adaptador.Fill(resultado);
-            Desconectar();
-            return resultado.Tables[0];
         }
 
-        public DataTable EjecutarConsultaDS(string sentencia, List<MySqlParameter> ListaParametros, CommandType TipoComando)
+        public DataTable EjecutarConsultaDS(string sentencia, List<MySqlParameter> listaParametros, CommandType tipoComando)
         {
-            MySqlDataAdapter adaptador = new MySqlDataAdapter();
-            adaptador.SelectCommand = new MySqlCommand(sentencia, conex);
-            adaptador.SelectCommand.CommandType = TipoComando;
-
-            foreach (MySqlParameter parametro in ListaParametros)
+            using (MySqlDataAdapter adaptador = new MySqlDataAdapter())
             {
-                adaptador.SelectCommand.Parameters.Add(parametro);
+                adaptador.SelectCommand = new MySqlCommand(sentencia, _conexion);
+                adaptador.SelectCommand.CommandType = tipoComando;
+                adaptador.SelectCommand.Parameters.AddRange(listaParametros.ToArray());
+
+                DataTable resultado = new DataTable();
+                Conectar();
+                adaptador.Fill(resultado);
+                return resultado;
             }
-            DataTable resultado = new();
-            adaptador.Fill(resultado);
-            adaptador.Dispose();
-            Desconectar();
-            return resultado;
         }
 
-        public void EjecutarTransaccion(List<string> Sentencia)
+        public void EjecutarTransaccion(List<string> sentencias)
         {
-            MySqlTransaction transa = conex.BeginTransaction();
-            MySqlCommand mySqlCommand;
-
-            for (int i = 0; i < Sentencia.Count; i++)
+            using (MySqlTransaction transaccion = _conexion.BeginTransaction())
             {
-                if (Sentencia[i].Length > 0)
+                try
                 {
-                    mySqlCommand = new MySqlCommand(Sentencia[i], conex);
-                    mySqlCommand.Transaction = transa;
-                    mySqlCommand.ExecuteNonQuery();
+                    foreach (string sentencia in sentencias)
+                    {
+                        if (!string.IsNullOrEmpty(sentencia))
+                        {
+                            using (MySqlCommand comando = new MySqlCommand(sentencia, _conexion, transaccion))
+                            {
+                                comando.ExecuteNonQuery();
+                            }
+                        }
+                    }
+
+                    transaccion.Commit();
+                }
+                catch (Exception)
+                {
+                    transaccion.Rollback();
+                    throw; // Puedes manejar la excepción de acuerdo a tus necesidades
                 }
             }
-
         }
-
     }
 }

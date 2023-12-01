@@ -1,78 +1,48 @@
-﻿@*@model Plantilla_Agenda.Models.Agenda*@
-        @model AgendaCreateViewModel
+﻿@model AgendaCreateViewModel
 @{
     ViewData["Title"] = "Create";
 }
 
 <h1>Create</h1>
 
-<h4>Agenda</h4>
-<hr />
 <div class="row">
     <div class="col-md-4">
-       @* <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <form asp-controller="Agenda" asp-action="Create" method="post">
+            @Html.AntiForgeryToken()
+
+            <select asp-for="IdSede" class="form-control" asp-items="Model.Sedes">
+                <option value="">-- Seleccione una sede --</option>
+            </select>
+            <span asp-validation-for="IdSede" class="text-danger"></span>
+
+            <select asp-for="IdServicio" class="form-control" asp-items="Model.Servicios">
+                <option value="">-- Seleccione un servicio --</option>
+            </select>
+            <span asp-validation-for="IdServicio" class="text-danger"></span>
+
+            <select asp-for="IdHorario" class="form-control" asp-items="Model.Horarios">
+                <option value="">-- Seleccione un horario --</option>
+            </select>
+            <span asp-validation-for="IdHorario" class="text-danger"></span>
+
+            <select asp-for="IdProfesional" class="form-control" asp-items="Model.Personas">
+                <option value="">-- Seleccione un profesional --</option>
+            </select>
+            <span asp-validation-for="IdProfesional" class="text-danger"></span>
+
             <div class="form-group">
-                <label asp-for="IdSede" class="control-label"></label>
-                <select asp-for="IdSede" class="form-control" asp-items="@(new SelectList(Model.Sedes, "IdSede", "Direccion"))">
-                    <option value="">-- Seleccione una sede --</option>
-                </select>
-                <span asp-validation-for="IdSede" class="text-danger"></span>
+                <button type="submit" class="btn btn-primary">Guardar</button>
             </div>
-            <div class="form-group">
-                <label asp-for="IdServicio" class="control-label"></label>
-                <select asp-for="IdServicio" class="form-control" asp-items="@(new SelectList(Model.Servicioss, "IdServicio", "Nombre"))">
-                    <option value="">-- Seleccione un servicio --</option>
-                </select>
-                <span asp-validation-for="IdServicio" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="IdHorario" class="control-label"></label>
-                <select asp-for="IdHorario" class="form-control" asp-items="@(new SelectList(Model.Horarios, "IdHorario", "HoraInicio"))">
-                    <option value="">-- Seleccione un horario --</option>
-                </select>
-                <span asp-validation-for="IdHorario" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="IdProfesional" class="control-label"></label>
-                <select asp-for="IdProfesional" class="form-control" asp-items="@(new SelectList(Model.Personas, "IdPersona", "PrimerNombre"))">
-                    <option value="">-- Seleccione un profesional --</option>
-                </select>
-                <span asp-validation-for="IdProfesional" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>*@
-
-
-<form asp-controller="Agenda" asp-action="Create">
-
-  <select asp-for="IdSede" asp-items="Model.Sedes"></select>
-
-  <select asp-for="IdServicio" asp-items="Model.Servicios"></select>
-
-  <select asp-for="IdHorario" asp-items="Model.Horarios"></select>
-
-  <select asp-for="IdProfesional" asp-items="Model.Personas"></select>
-
-  <button type="submit">Guardar</button>
-
-</form>
+        </form>
     </div>
 </div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-      
-  
- 
 
 <div>
     <a asp-action="Index" class="btn btn-secondary">Regresar</a>
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

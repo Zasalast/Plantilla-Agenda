@@ -4,12 +4,9 @@
     {
         public string Conexiondb { get; set; }
 
-        public ContextoDB(String valor)
+        public ContextoDB(string conexiondb)
         {
-
-            Conexiondb = valor;
-
+            Conexiondb = conexiondb;
         }
-
     }
 }

@@ -1,11 +1,12 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
 using Plantilla_Agenda.Data;
-using Plantilla_Agenda.Models;
 using Plantilla_Agenda.Repositories;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// Configuración de servicios
 builder.Services.AddControllersWithViews();
 builder.Services.AddScoped<AgendaRepository, AgendaRepository>();
 builder.Services.AddSingleton(new ContextoDB(builder.Configuration.GetConnectionString("Conexiondb")));
@@ -14,93 +15,47 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     {
         o.LoginPath = "/Persona/Login";
     });
+
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
+// Configuración del pipeline de solicitud
+if (app.Environment.IsDevelopment())
+{
+    app.UseDeveloperExceptionPage();
+}
+else
 {
     app.UseExceptionHandler("/Home/Error");
+    app.UseHsts();
 }
+
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
+// Configuración de enrutamiento
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+// Rutas específicas para Agendamiento
 app.MapControllerRoute(
-    name: "Details",
-    pattern: "Agendamiento/Details/{id}",
-    defaults: new { controller = "Agendamiento", action = "Details" });
+    name: "Agendamiento",
+    pattern: "Agendamiento/{action}/{id?}",
+    defaults: new { controller = "Agendamiento" });
 
+// Rutas específicas para Agenda
 app.MapControllerRoute(
-    name: "Create",
-    pattern: "Agendamiento/Create",
-    defaults: new { controller = "Agendamiento", action = "Create" });
+    name: "Agenda",
+    pattern: "Agenda/{action}/{id?}",
+    defaults: new { controller = "Agenda" });
 
+// Rutas específicas para Servicios
 app.MapControllerRoute(
-    name: "Edit",
-    pattern: "Agendamiento/Edit/{id}",
-    defaults: new { controller = "Agendamiento", action = "Edit" });
-
-app.MapControllerRoute(
-    name: "List",
-    pattern: "Agendamiento/List",
-    defaults: new { controller = "Agendamiento", action = "List" });
-
-app.MapControllerRoute(
-    name: "Delete",
-    pattern: "Agendamiento/Delete/{id}",
-    defaults: new { controller = "Agendamiento", action = "Delete" });
-
-app.MapControllerRoute(
-    name: "Index",
-    pattern: "Agendamiento",
-    defaults: new { controller = "Agendamiento", action = "Index" });
-
-app.MapControllerRoute(
-    name: "Details",
-    pattern: "Agenda/Details/{id}",
-    defaults: new { controller = "Agenda", action = "Details" });
-
-app.MapControllerRoute(
-    name: "Create",
-    pattern: "Agenda/Create",
-    defaults: new { controller = "Agenda", action = "Create" });
-
-app.MapControllerRoute(
-    name: "Edit",
-    pattern: "Agenda/Edit/{id}",
-    defaults: new { controller = "Agenda", action = "Edit" });
-
-app.MapControllerRoute(
-    name: "List",
-    pattern: "Agenda/List",
-    defaults: new { controller = "Agenda", action = "List" });
-
-app.MapControllerRoute(
-    name: "Delete",
-    pattern: "Agenda/Delete/{id}",
-    defaults: new { controller = "Agenda", action = "Delete" });
-
-app.MapControllerRoute(
-    name: "Index",
-    pattern: "Agenda",
-    defaults: new { controller = "Agenda", action = "Index" });
-
-app.MapControllerRoute(
-    name: "Create",
-    pattern: "Servicios",
-    defaults: new { controller = "Servicios", action = "Create" });
-
-
-
-app.MapControllerRoute(
-    name: "Delete",
-    pattern: "Servicios",
-    defaults: new { controller = "Servicios", action = "Delete" });
+    name: "Servicios",
+    pattern: "Servicios/{action}/{id?}",
+    defaults: new { controller = "Servicios" });
 
 app.Run();
