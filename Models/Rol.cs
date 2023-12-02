@@ -7,7 +7,7 @@ namespace Plantilla_Agenda.Models
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int? IdRol { get; set; }
-        public string? Nombre { get; set; }
+        public int IdRol { get; set; }
+        public string Nombre { get; set; }
     }
 }

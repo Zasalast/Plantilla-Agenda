@@ -10,8 +10,9 @@ namespace Plantilla_Agenda.Models
         public int IdCancelacion { get; set; }
         public DateTime? FechaHora { get; set; }
         public string Motivo { get; set; }
-        public int IdAgendamiento { get; set; }
+        public int? IdAgendamiento { get; set; }
 
-        public List<Agendamiento>? Agendamientos { get; set; }
+        // Propiedades de navegación
+        public Agendamiento Agendamiento { get; set; }
     }
 }

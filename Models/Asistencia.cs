@@ -8,8 +8,10 @@ namespace Plantilla_Agenda.Models
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int IdAsistencia { get; set; }
-        public char? EstadoAsistencia { get; set; }
+        public string EstadoAsistencia { get; set; }
         public int? IdAgendamiento { get; set; }
-        public List<Agendamiento>? Agendamientos { get; set; }
+
+        // Propiedades de navegación
+        public Agendamiento Agendamiento { get; set; }
     }
 }

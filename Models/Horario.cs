@@ -10,6 +10,7 @@ namespace Plantilla_Agenda.Models
         public int IdHorario { get; set; }
         public TimeSpan? HoraInicio { get; set; }
         public TimeSpan? HoraFin { get; set; }
+        public string Disponibilidad { get; set; }
         public DateTime? FechaInicio { get; set; }
         public DateTime? FechaFin { get; set; }
     }

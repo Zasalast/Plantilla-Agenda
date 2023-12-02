@@ -9,5 +9,8 @@ namespace Plantilla_Agenda.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int IdServicio { get; set; }
         public string Nombre { get; set; }
+        public string Descripcion { get; set; }
+        public TimeSpan Duracion { get; set; }
+        public string Estado { get; set; }
     }
 }

@@ -8,9 +8,11 @@ namespace Plantilla_Agenda.Models
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int IdRol { get; set; }
-
-
         public int IdPermiso { get; set; }
+
+        // Propiedades de navegación
+        public Rol Rol { get; set; }
+        public Permiso Permiso { get; set; }
 
     }
 }

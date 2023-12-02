@@ -10,15 +10,11 @@ namespace Plantilla_Agenda.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int IdAgendamiento { get; set; }
         public int? IdCliente { get; set; }
-      
-        public char? Estado { get; set; }
-        public int? IdAgenda { get; set; }
+        public string Estado { get; set; }
+        public DateTime? FechaHora { get; set; }
 
-        public int? IdCancelacion { get; set; }
-        public int? IdReserva { get; set; }
-        public List<Cancelacion>? Cancelaciones { get; set; }
-        public List<Agenda>? Agendas { get; set; }
-        public List<Persona>? personas { get; set; }
+        // Propiedades de navegación
+        public Persona Cliente { get; set; }
 
     }
 }
