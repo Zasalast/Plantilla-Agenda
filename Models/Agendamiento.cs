@@ -10,8 +10,7 @@ namespace Plantilla_Agenda.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int IdAgendamiento { get; set; }
         public int? IdCliente { get; set; }
-        public DateTime? Fecha { get; set; }
-        public TimeSpan? Hora { get; set; }
+      
         public char? Estado { get; set; }
         public int? IdAgenda { get; set; }
 
