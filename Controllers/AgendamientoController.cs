@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using MySql.Data.MySqlClient;
@@ -23,52 +24,55 @@ namespace Plantilla_Agenda.Controllers
             _personaRepository = personaRepository;
         }
 
-        // GET: AgendamientoController
+     
+
+
+        public ActionResult List()
+        {
+             
+            var  agendamientos = _agendamientoRepository.GetAgendamientos();
+             
+            return View(agendamientos);
+        }
         public ActionResult Index()
         {
             var idUsuario = HttpContext.User.FindFirst("IdUsuario")?.Value;
 
             // Verificar si el IdUsuario es válido
-            if (string.IsNullOrEmpty(idUsuario))
+            if (string.IsNullOrEmpty(idUsuario) || !int.TryParse(idUsuario, out int idUsuarioInt))
             {
-                TempData["ErrorMessage"] = "Error: No se puede obtener el IdUsuario desde la sesión.";
+             
+                TempData["ErrorMessage"] = "Error: IdUsuario no válido.";
                 return View();
             }
-
-            // Retrieve all agendamientos from the database
-            List<Agendamiento> agendamientos = _agendamientoRepository.GetAgendamientos().ToList();
-
-            // Map IdCliente to Persona's name
-            foreach (var agendamiento in agendamientos)
-            {
-                // Assuming you have a property called NombreCliente in your Agendamiento model
-                agendamiento.NombreCliente = _personaRepository.ObtenerNombrePersonaPorId(Convert.ToInt32( idUsuario));
+            else {
+                int IdUser = Convert.ToInt32(idUsuario);
+                // Obtener agendamientos del cliente utilizando el procedimiento almacenado
+                List<AgendamientoModel> citasCliente = _agendamientoRepository.ObtenerCitasCliente(idUsuarioInt)
+                .Select(agendamiento => new AgendamientoModel
+                {
+                    IdAgendamiento = agendamiento.IdAgendamiento,
+                    Estado = agendamiento.Estado,
+                    Servicio = agendamiento.Servicio,
+                    HoraInicio = agendamiento.HoraInicio,
+                    HoraFin = agendamiento.HoraFin,
+                    NombreProfesional = ObtenerNombreProfesional(IdUser)
+                })
+                .ToList();
+                return View(citasCliente);
             }
 
-            return View(agendamientos);
+            return View();
         }
-        public ActionResult List()
+
+        // Método para obtener el primer nombre del profesional
+        private string ObtenerNombreProfesional(int idProfesional)
         {
-            var idUsuario = HttpContext.User.FindFirst("IdUsuario")?.Value;
-
-            // Verificar si el IdUsuario es válido
-            if (string.IsNullOrEmpty(idUsuario))
-            {
-                TempData["ErrorMessage"] = "Error: No se puede obtener el IdUsuario desde la sesión.";
-                return View();
-            }
-
-            // Retrieve all agendamientos from the database
-            List<Agendamiento> agendamientos = _agendamientoRepository.GetAgendamientos().ToList();
-
-            // Map IdCliente to Persona's name
-            foreach (var agendamiento in agendamientos)
-            {
-                // Assuming you have a property called NombreCliente in your Agendamiento model
-                agendamiento.NombreCliente = _personaRepository.ObtenerNombrePersonaPorId(Convert.ToInt32(idUsuario));
-            }
-
-            return View(agendamientos);
+            // Aquí debes implementar la lógica para obtener el primer nombre del profesional
+            // Puedes utilizar el repositorio u otros métodos que tengas disponibles.
+            // Ejemplo hipotético:
+            var profesional = _personaRepository.ObtenerPersonaPorId(idProfesional);
+            return profesional != null ? profesional.PrimerNombre : "Desconocido";
         }
 
         // GET: AgendamientoController/Details/5
@@ -83,7 +87,7 @@ namespace Plantilla_Agenda.Controllers
                 return View();
             }
 
-            Agendamiento agendamiento;
+            AgendamientoModel agendamiento;
 
             // Asignar el IdUsuario al agendamiento
             agendamiento = _agendamientoRepository.GetAgendamientoById(id);
@@ -108,7 +112,7 @@ namespace Plantilla_Agenda.Controllers
         // POST: AgendamientoController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(Agendamiento agendamiento)
+        public ActionResult Create(AgendamientoModel agendamiento)
         {
             try
             {
@@ -139,7 +143,7 @@ namespace Plantilla_Agenda.Controllers
         public ActionResult Edit(int id)
         {
             // Retrieve the agendamiento with the specified ID from the database
-            Agendamiento agendamiento = _agendamientoRepository.GetAgendamientoById(id);
+            AgendamientoModel agendamiento = _agendamientoRepository.GetAgendamientoById(id);
 
             // Populate the list of personas for dropdown
             ViewBag.Personas = new SelectList(_personaRepository.ObtenerPersonas(), "IdPersona", "NombreCompleto");
@@ -150,7 +154,7 @@ namespace Plantilla_Agenda.Controllers
         // POST: AgendamientoController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, Agendamiento updatedAgendamiento)
+        public ActionResult Edit(int id, AgendamientoModel updatedAgendamiento)
         {
             try
             {
@@ -187,7 +191,7 @@ namespace Plantilla_Agenda.Controllers
         public ActionResult Delete(int id)
         {
             // Retrieve the agendamiento with the specified ID from the database
-            Agendamiento agendamiento = _agendamientoRepository.GetAgendamientoById(id);
+            AgendamientoModel agendamiento = _agendamientoRepository.GetAgendamientoById(id);
             return View(agendamiento);
         }
 

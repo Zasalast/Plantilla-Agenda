@@ -7,41 +7,43 @@
     using System.Data;
     using System.Linq;
     using Plantilla_Agenda.Models;
+    using Plantilla_Agenda.Data;
 
     public interface IAgendamientoRepository
     {
-        IEnumerable<Agendamiento> GetAgendamientos();
-        Agendamiento GetAgendamientoById(int id);
-        void CrearAgendamiento(Agendamiento agendamiento);
-        void UpdateAgendamiento(int id, Agendamiento agendamiento);
+        IEnumerable<AgendamientoModel> GetAgendamientos();
+        AgendamientoModel GetAgendamientoById(int id);
+        void CrearAgendamiento(AgendamientoModel agendamiento);
+        void UpdateAgendamiento(int id, AgendamientoModel agendamiento);
         void DeleteAgendamiento(int id);
     }
     public class AgendamientoRepository
     {
         private readonly string _connectionString;
-
-        public AgendamientoRepository(IConfiguration configuration)
+        private readonly ContextoDB _dbContext;
+        public AgendamientoRepository(IConfiguration configuration, ContextoDB dbContext)
         {
             _connectionString = configuration.GetConnectionString("DefaultConnection");
+            _dbContext = dbContext;
         }
 
-        public IEnumerable<Agendamiento> GetAgendamientos()
+        public IEnumerable<AgendamientoModel> GetAgendamientos()
         {
             using (IDbConnection db = new MySqlConnection(_connectionString))
             {
-                return db.Query<Agendamiento>("SELECT * FROM Agendamientos");
+                return db.Query<AgendamientoModel>("SELECT * FROM Agendamientos");
             }
         }
 
-        public Agendamiento GetAgendamientoById(int id)
+        public AgendamientoModel GetAgendamientoById(int id)
         {
             using (IDbConnection db = new MySqlConnection(_connectionString))
             {
-                return db.QueryFirstOrDefault<Agendamiento>("SELECT * FROM Agendamientos WHERE IdAgendamiento = @IdAgendamiento", new { IdAgendamiento = id });
+                return db.QueryFirstOrDefault<AgendamientoModel>("SELECT * FROM Agendamientos WHERE IdAgendamiento = @IdAgendamiento", new { IdAgendamiento = id });
             }
         }
 
-        public void CrearAgendamiento(Agendamiento agendamiento)
+        public void CrearAgendamiento(AgendamientoModel agendamiento)
         {
             using (IDbConnection db = new MySqlConnection(_connectionString))
             {
@@ -50,7 +52,7 @@
             }
         }
 
-        public void UpdateAgendamiento(int id, Agendamiento agendamiento)
+        public void UpdateAgendamiento(int id, AgendamientoModel agendamiento)
         {
             using (IDbConnection db = new MySqlConnection(_connectionString))
             {
@@ -67,6 +69,20 @@
                 db.Execute(query, new { IdAgendamiento = id });
             }
         }
+        public List<AgendamientoModel> ObtenerCitasCliente(int idCliente)
+        {
+            using (var connection = new MySqlConnection("tu cadena de conexión"))
+            {
+                connection.Open();
+
+                var result = connection.Query<AgendamientoModel>("NombreDeTuProcedimientoAlmacenado",
+                    new { p_IdCliente = idCliente },
+                    commandType: CommandType.StoredProcedure);
+
+                return result.ToList();
+            }
+        }
+
     }
 }
 

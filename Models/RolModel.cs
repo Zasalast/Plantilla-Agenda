@@ -3,16 +3,11 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Plantilla_Agenda.Models
 {
-    public class RolPermiso
+    public class RolModel
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int IdRol { get; set; }
-        public int IdPermiso { get; set; }
-
-        // Propiedades de navegación
-        public Rol Rol { get; set; }
-        public Permiso Permiso { get; set; }
-
+        public string Nombre { get; set; }
     }
 }

@@ -79,7 +79,7 @@ namespace Plantilla_Agenda.Controllers
 
 
         [HttpPost("registrar-admin")]
-        public IActionResult RegistrarAdmin(Persona persona)
+        public IActionResult RegistrarAdmin(PersonaModel persona)
         {
             // Utiliza un servicio o repositorio dedicado para el registro de persona
             // _personaRepository.RegistrarPersonaPorAdmin(persona);

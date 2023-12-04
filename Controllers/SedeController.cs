@@ -38,7 +38,7 @@ namespace Plantilla_Agenda.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(Sede sede)
+        public ActionResult Create(SedeModel sede)
         {
             try
             {
@@ -60,7 +60,7 @@ namespace Plantilla_Agenda.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, Sede updated)
+        public ActionResult Edit(int id, SedeModel updated)
         {
             try
             {

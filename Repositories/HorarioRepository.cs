@@ -16,9 +16,9 @@ namespace Plantilla_Agenda.Repositories
             _connectionString = connectionString;
         }
 
-        public List<Horario> MostrarDisponibilidadHorariosServicio(int idServicio)
+        public List<HorarioModel> MostrarDisponibilidadHorariosServicio(int idServicio)
         {
-            var horarios = new List<Horario>();
+            var horarios = new List<HorarioModel>();
 
             using (var connection = new MySqlConnection(_connectionString))
             {
@@ -45,9 +45,9 @@ namespace Plantilla_Agenda.Repositories
 
         // Otros métodos según tus necesidades...
 
-        private Horario MapHorarioFromReader(IDataReader reader)
+        private HorarioModel MapHorarioFromReader(IDataReader reader)
         {
-            return new Horario
+            return new HorarioModel
             {
                 IdHorario = Convert.ToInt32(reader["IdHorario"]),
                 HoraInicio = Convert.IsDBNull(reader["HoraInicio"]) ? TimeSpan.Zero : TimeSpan.Parse(Convert.ToString(reader["HoraInicio"])),

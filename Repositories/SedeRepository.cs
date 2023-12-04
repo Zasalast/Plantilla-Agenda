@@ -19,13 +19,13 @@ namespace Plantilla_Agenda.Repositories
             _connectionString = configuration.GetConnectionString("DefaultConnection");
         }
 
-        public List<Sede> ObtenerSede()
+        public List<SedeModel> ObtenerSede()
         {
             using (var connection = new MySqlConnection(_config.GetConnectionString("DefaultConnection")))
             {
                 
                 var sql = "SELECT * FROM sedes";
-                return connection.Query<Sede>(sql).AsList();
+                return connection.Query<SedeModel>(sql).AsList();
                
                   
             } 
@@ -34,16 +34,16 @@ namespace Plantilla_Agenda.Repositories
            
         }
 
-        public Sede ObtenerSedePorId(int id)
+        public SedeModel ObtenerSedePorId(int id)
         {
             using (var connection = new MySqlConnection(_config.GetConnectionString("DefaultConnection")))
             {
                 var sql = "SELECT * FROM sedes WHERE IdSede = @IdSede";
-                return connection.QueryFirstOrDefault<Sede>(sql, new { IdServicio = id });
+                return connection.QueryFirstOrDefault<SedeModel>(sql, new { IdServicio = id });
             }
         }
 
-        public void CrearSede(Sede sede)
+        public void CrearSede(SedeModel sede)
         {
             using (var connection = new MySqlConnection(_config.GetConnectionString("DefaultConnection")))
             {
@@ -52,7 +52,7 @@ namespace Plantilla_Agenda.Repositories
             }
         }
 
-        public void ActualizarSede(Sede sede)
+        public void ActualizarSede(SedeModel sede)
         {
             using (var connection = new MySqlConnection(_config.GetConnectionString("DefaultConnection")))
             {

@@ -16,18 +16,18 @@ namespace Plantilla_Agenda.Repositories
             _config = config;
         }
 
-    public List<Persona> ObtenerPersonas()
+    public List<PersonaModel> ObtenerPersonas()
     {
         using IDbConnection db = new MySqlConnection(_config.GetConnectionString("DefaultConnection"));
         string query = "SELECT * FROM personas";
-        return db.Query<Persona>(query).AsList();
+        return db.Query<PersonaModel>(query).AsList();
     }
 
-        public Persona ObtenerPersonaPorId(int id)
+        public PersonaModel ObtenerPersonaPorId(int id)
         {
             using IDbConnection db = new MySqlConnection(_config.GetConnectionString("DefaultConnection"));
             string query = "SELECT * FROM personas WHERE IdPersona = @Id";
-            return db.QueryFirstOrDefault<Persona>(query, new { Id = id });
+            return db.QueryFirstOrDefault<PersonaModel>(query, new { Id = id });
         }
         public string ObtenerNombrePersonaPorId(int id)
         {
@@ -39,7 +39,7 @@ namespace Plantilla_Agenda.Repositories
         }
 
 
-        public void RegistrarPersonaPorAdmin(Persona persona)
+        public void RegistrarPersonaPorAdmin(PersonaModel persona)
         {
             using (var connection = new MySqlConnection(_config.GetConnectionString("DefaultConnection")))
             {

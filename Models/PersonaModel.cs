@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Plantilla_Agenda.Models
 {
-    public class Persona
+    public class PersonaModel
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]

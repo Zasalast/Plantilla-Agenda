@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Plantilla_Agenda.Models
 {
-    public class Horario
+    public class HorarioModel
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]

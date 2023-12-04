@@ -46,29 +46,14 @@ namespace Plantilla_Agenda.Controllers
             var agendas = _agendaRepository.ObtenerAgendas();
 
             // Pasar datos al view
-            return View(new AgendaDetails
+            return View(new AgendaDetailsModel
             {
                 Persona = personas,
                 Servicio = servicios,
                 Sede = sedes
             });
         }
-        public IActionResult List()
-        {
-            // Obtener datos
-            var personas = _personaRepository.ObtenerPersonas();
-            var servicios = _servicioRepository.ObtenerServicios();
-            var sedes = _sedeRepository.ObtenerSede();
-            var agendas = _agendaRepository.ObtenerAgendas();
-
-            // Pasar datos al view
-            return View(new AgendaDetails
-            {
-                Persona = personas,
-                Servicio = servicios,
-                Sede = sedes
-            });
-        }
+        
 
 
         /*  public async Task<IActionResult> Index()
@@ -94,39 +79,40 @@ namespace Plantilla_Agenda.Controllers
             return View(agenda);
         }
 
+        public async Task<IActionResult> List2()
+        {
+            var agendas = await _agendaRepository.ObtenerAgendas();
+            var agendaViewModels = agendas.Select(a => new AgendaViewModel
+            {
+                IdAgenda = a.IdAgenda,
+                Estado = a.Estado,
+                ProfesionalNombre = $"{a.PrimerNombreProfesional} {a.PrimerApellidoProfesional}",
+                SedeNombre = a.NombreSede,
+                ServicioNombre = a.NombreServicio,
+                ClienteNombre = $"{a.PrimerNombreCliente} {a.PrimerApellidoCliente}",
+                FechaInicio = a.FechaInicio,
+                HoraInicio = a.HoraInicio.TimeOfDay
+            }).ToList();
+
+            return View(agendaViewModels);
+        }
+
+
+
         [HttpGet]
         public IActionResult Create()
         {
             var model = new AgendaCreateViewModel
             {
-                Sedes = new SelectList(_sedeRepository.ObtenerSede(), "IdSede", "Direccion"),
-                Servicios = new SelectList(_servicioRepository.ObtenerServicios(), "IdServicio", "Nombre"),
-                Horarios = new SelectList(_agendaRepository.ObtenerHorarios(), "IdHorario", "HoraInicio"),
-                Personas = new SelectList(_agendaRepository.GetProfesionales(), "IdPersona", "NombreCompleto")
+                Sedes = new SelectList(_agendaRepository.GetSedes(), "IdSede", "Nombre"),
+                Servicios = new SelectList(_agendaRepository.GetServicios(), "IdServicio", "Nombre"),
+                Horarios = new SelectList(_agendaRepository.GetHorarios(), "IdHorario", "HoraInicio"),
+                Profesionales = new SelectList(_agendaRepository.GetProfesionales(), "IdPersona", "NombreCompleto")
             };
 
             return View(model);
         }
 
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Create([Bind("IdAgenda,IdSede,IdServicio,IdHorario,IdProfesional,Estado,IdCliente,IdSedeAgendada,IdServicioAgendado,NombreCliente")] Agenda agenda)
-        {
-            if (ModelState.IsValid)
-            {
-                _agendaRepository.Create2(agenda);  // Utiliza el método Create2 o el que prefieras
-
-                return RedirectToAction(nameof(Index));
-            }
-
-            // Recargar datos necesarios en caso de error
-           
-
-            return View(agenda);
-        }
-
-        // POST: Agenda/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Create(AgendaCreateViewModel model)
@@ -135,7 +121,7 @@ namespace Plantilla_Agenda.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    var agenda = new Agenda
+                    var agenda = new AgendaModel
                     {
                         IdSede = model.IdSede,
                         IdServicio = model.IdServicio,
@@ -143,25 +129,17 @@ namespace Plantilla_Agenda.Controllers
                         IdProfesional = model.IdProfesional
                     };
 
-                    int generatedId = _agendaRepository.Create(agenda);
+                    _agendaRepository.Create(agenda);
 
-                    if (generatedId > 0)
-                    {
-                        return RedirectToAction("Index");
-                    }
-                    else
-                    {
-                        ModelState.AddModelError(string.Empty, "Error creating agenda.");
-                    }
+                    return RedirectToAction("Index");
                 }
-                // Repopulate dropdowns if needed
-                // Repopular dropdowns en caso de error
-                model.Sedes = new SelectList(_sedeRepository.ObtenerSede(), "IdSede", "Direccion");
-                model.Servicios = new SelectList(_servicioRepository.ObtenerServicios(), "IdServicio", "Nombre");
-                model.Horarios = new SelectList(_agendaRepository.ObtenerHorarios(), "IdHorario", "HoraInicio");
-                model.Personas = new SelectList(_agendaRepository.GetProfesionales(), "IdPersona", "NombreCompleto");
 
-                return View(model);
+                // Repopulate dropdowns if needed
+                model.Sedes = new SelectList(_agendaRepository.GetSedes(), "IdSede", "Nombre");
+                model.Servicios = new SelectList(_agendaRepository.GetServicios(), "IdServicio", "Nombre");
+                model.Horarios = new SelectList(_agendaRepository.GetHorarios(), "IdHorario", "HoraInicio");
+                model.Profesionales = new SelectList(_agendaRepository.GetProfesionales(), "IdPersona", "NombreCompleto");
+
                 return View(model);
             }
             catch (Exception ex)

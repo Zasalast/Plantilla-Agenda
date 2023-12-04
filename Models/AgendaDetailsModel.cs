@@ -1,6 +1,6 @@
 ﻿namespace Plantilla_Agenda.Models
 {
-    public class AgendaDetails
+    public class AgendaDetailsModel
     {
         public int IdAgenda { get; set; }
 
@@ -24,10 +24,10 @@
 
         public string Estado { get; set; }
 
-        public List<Persona> Persona { get; set; }
-        public List<Servicio> Servicio { get; set; }
-        public List<Sede> Sede { get; set; }
-        public List<Horario> Horario { get; set; }
-        public List<Agenda> Agenda { get; set; }
+        public List<PersonaModel> Persona { get; set; }
+        public List<ServicioModel> Servicio { get; set; }
+        public List<SedeModel> Sede { get; set; }
+        public List<HorarioModel> Horario { get; set; }
+        public List<AgendaModel> Agenda { get; set; }
     }
 }

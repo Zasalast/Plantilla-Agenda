@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Plantilla_Agenda.Models.Agendamiento>
+﻿@model IEnumerable<Plantilla_Agenda.Models.AgendamientoModel>
 
 @{
     ViewData["Title"] = "Crear Agendamiento";
@@ -28,26 +28,27 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.IdAgendamiento)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IdCliente)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Estado)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.FechaHora)
-            </td>
-            <td>
-                @Html.ActionLink("Edit", "Edit", new {  id=item.IdAgendamiento  }) |
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.IdAgendamiento)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.IdCliente)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Estado)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.FechaHora)
+                </td>
+                <td>
+                    @Html.ActionLink("Edit", "Edit", new { id = item.IdAgendamiento }) |
                     @Html.ActionLink("Details", "Details", new { id = item.IdAgendamiento }) |
                     @Html.ActionLink("Delete", "Delete", new { id = item.IdAgendamiento })
-            </td>
-        </tr>
-}
+                </td>
+            </tr>
+        }
     </tbody>
 </table>

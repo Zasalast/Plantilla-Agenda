@@ -17,29 +17,29 @@ namespace Plantilla_Agenda.Repositories
             _config = config;
         }
 
-        public Usuario ObtenerUsuarioPorNombreUsuario(string nombreUsuario)
+        public UsuarioModel ObtenerUsuarioPorNombreUsuario(string nombreUsuario)
         {
             using (var connection = new MySqlConnection(_config.GetConnectionString("DefaultConnection")))
             {
                 // Execute the query to obtain the user by username
-                return connection.QueryFirstOrDefault<Usuario>(
+                return connection.QueryFirstOrDefault<UsuarioModel>(
                     "SELECT * FROM usuario WHERE NombreUsuario = @NombreUsuario",
                     new { NombreUsuario = nombreUsuario });
             }
 
             return null;
         }
-        public Usuario IniciarSesion(string nombreUsuario, string clave)
+        public UsuarioModel IniciarSesion(string nombreUsuario, string clave)
         {
             using (var connection = new MySqlConnection(_config.GetConnectionString("DefaultConnection")))
             {
-                return connection.QueryFirstOrDefault<Usuario>(
+                return connection.QueryFirstOrDefault<UsuarioModel>(
                     "IniciarSesion",
                     new { InNombreUsuario = nombreUsuario, InClave = clave },
                     commandType: CommandType.StoredProcedure);
             }
         }
-        public void RegistrarUsuario(Usuario usuario)
+        public void RegistrarUsuario(UsuarioModel usuario)
         {
             using (var connection = new MySqlConnection(_config.GetConnectionString("DefaultConnection")))
             {
@@ -65,7 +65,7 @@ namespace Plantilla_Agenda.Repositories
             }
         }
 
-        public void ActualizarUsuario(Usuario usuario)
+        public void ActualizarUsuario(UsuarioModel usuario)
         {
             using (var connection = new MySqlConnection(_config.GetConnectionString("DefaultConnection")))
             {

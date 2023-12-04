@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Plantilla_Agenda.Models
 {
-    public class Usuario
+    public class UsuarioModel
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -15,8 +15,8 @@ namespace Plantilla_Agenda.Models
         public string Activo { get; set; }
 
         // Propiedades de navegación
-        public Persona Persona { get; set; }
-        public Rol Rol { get; set; }
+        public PersonaModel Persona { get; set; }
+        public RolModel Rol { get; set; }
 
         [NotMapped]
         public bool MantenerActivo { get; set; }

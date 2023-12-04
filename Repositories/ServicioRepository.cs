@@ -16,25 +16,25 @@ namespace Plantilla_Agenda.Repositories
             _config = config;
         }
 
-        public List<Servicio> ObtenerServicios()
+        public List<ServicioModel> ObtenerServicios()
         {
             using (var connection = new MySqlConnection(_config.GetConnectionString("DefaultConnection")))
             {
                 var sql = "SELECT * FROM servicios";
-                return connection.Query<Servicio>(sql).AsList();
+                return connection.Query<ServicioModel>(sql).AsList();
             }
         }
 
-        public Servicio ObtenerServicioPorId(int id)
+        public ServicioModel ObtenerServicioPorId(int id)
         {
             using (var connection = new MySqlConnection(_config.GetConnectionString("DefaultConnection")))
             {
                 var sql = "SELECT * FROM servicios WHERE IdServicio = @IdServicio";
-                return connection.QueryFirstOrDefault<Servicio>(sql, new { IdServicio = id });
+                return connection.QueryFirstOrDefault<ServicioModel>(sql, new { IdServicio = id });
             }
         }
 
-        public void CrearServicio(Servicio servicio)
+        public void CrearServicio(ServicioModel servicio)
         {
             using (var connection = new MySqlConnection(_config.GetConnectionString("DefaultConnection")))
             {
@@ -43,7 +43,7 @@ namespace Plantilla_Agenda.Repositories
             }
         }
 
-        public void ActualizarServicio(Servicio servicio)
+        public void ActualizarServicio(ServicioModel servicio)
         {
             using (var connection = new MySqlConnection(_config.GetConnectionString("DefaultConnection")))
             {

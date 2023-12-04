@@ -43,7 +43,7 @@ namespace Plantilla_Agenda.Controllers
 
         [Authorize]
         [HttpPost]
-        public IActionResult Actualizacion(Persona persona, string confirmarContrasena, string contrasenaNueva)
+        public IActionResult Actualizacion(PersonaModel persona, string confirmarContrasena, string contrasenaNueva)
         {
            
                     return RedirectToAction("Home", "Home");

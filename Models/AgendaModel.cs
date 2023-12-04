@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 namespace Plantilla_Agenda.Models
 {
     [Table("Agenda")]
-    public class Agenda
+    public class AgendaModel
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -26,6 +26,15 @@ namespace Plantilla_Agenda.Models
 
         public int? IdServicioAgendado { get; set; }
         [NotMapped]
-        public string? NombreCliente { get; set; }
+        public string? PrimerNombreCliente { get; set; }
+        public string ProfesionalNombre { get; set; }
+        public string PrimerNombreProfesional { get; set; }
+        public string PrimerApellidoProfesional { get; set; }
+        public string NombreSede { get; set; }
+        public string NombreServicio { get; set; }
+        public string ClienteNombre { get; set; }
+        public string PrimerApellidoCliente { get; set; }
+        public DateTime FechaInicio { get; set; }
+        public DateTime HoraInicio { get; set; }
     }
 }

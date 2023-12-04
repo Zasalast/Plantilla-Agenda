@@ -19,17 +19,17 @@ namespace Plantilla_Agenda.Data
 
       
 
-        public async Task<Agenda> GetAgendaById(int id)
+        public async Task<AgendaModel> GetAgendaById(int id)
         {
             using (IDbConnection connection = new MySqlConnection(_config.GetConnectionString("DefaultConnection")))
             {
                 connection.Open();
-                var agenda = await connection.QueryFirstOrDefaultAsync<Agenda>("SELECT * FROM agendas WHERE IdAgenda = @IdAgenda", new { IdAgenda = id });
+                var agenda = await connection.QueryFirstOrDefaultAsync<AgendaModel>("SELECT * FROM agendas WHERE IdAgenda = @IdAgenda", new { IdAgenda = id });
                 return agenda;
             }
         }
 
-        public int Create(Agenda agenda)
+        public int Create(AgendaModel agenda)
         {
             using (IDbConnection connection = new MySqlConnection(_config.GetConnectionString("DefaultConnection")))
             {
@@ -38,34 +38,25 @@ namespace Plantilla_Agenda.Data
                 return connection.QueryFirstOrDefault<int>(sql, agenda);
             }
         }
-        public int Create2(Agenda agenda)
+        public int Create2(AgendaModel agenda)
         {
             try
             {
                 using (var connection = new MySqlConnection(_config.GetConnectionString("DefaultConnection")))
                 {
-                    connection.Open();
-
-                    string sql = "INSERT INTO agendas (IdProfesional, IdHorario, IdSede, IdServicio) " +
-                                 "VALUES (@IdProfesional, @IdHorario, @IdSede, @IdServicio);" +
-                                 "SELECT LAST_INSERT_ID();";
-
-                    var command = new MySqlCommand(sql, connection);
-                    command.Parameters.AddWithValue("@IdProfesional", agenda.IdProfesional);
-                    command.Parameters.AddWithValue("@IdHorario", agenda.IdHorario);
-                    command.Parameters.AddWithValue("@IdSede", agenda.IdSede);
-                    command.Parameters.AddWithValue("@IdServicio", agenda.IdServicio);
-
-                    int generatedId = Convert.ToInt32(command.ExecuteScalar());
-
-                    if (generatedId > 0)
+                    var parameters = new
                     {
-                        Console.WriteLine("La agenda se creó correctamente con ID: " + generatedId);
-                    }
+                        IdProfesional = agenda.IdProfesional,
+                        IdHorario = agenda.IdHorario,
+                        IdSede = agenda.IdSede,
+                        IdServicio = agenda.IdServicio
+                    };
 
-                    connection.Close();
+                    const string sql = "INSERT INTO agendas (IdProfesional, IdHorario, IdSede, IdServicio) " +
+                                       "VALUES (@IdProfesional, @IdHorario, @IdSede, @IdServicio);" +
+                                       "SELECT LAST_INSERT_ID();";
 
-                    return generatedId;
+                    return connection.ExecuteScalar<int>(sql, parameters);
                 }
             }
             catch (Exception ex)
@@ -75,16 +66,16 @@ namespace Plantilla_Agenda.Data
             }
         }
 
-        public async Task<IEnumerable<Agenda>> ObtenerAgendas()
+        public async Task<IEnumerable<AgendaModel>> ObtenerAgendas()
         {
             using (IDbConnection connection = new MySqlConnection(_config.GetConnectionString("DefaultConnection")))
             {
                 connection.Open();
-                var agendas = await connection.QueryAsync<Agenda>("SELECT * FROM agendas");
+                var agendas = await connection.QueryAsync<AgendaModel>("SELECT * FROM agendas");
                 return agendas;
             }
         }
-        public void Update(Agenda agenda)
+        public void Update(AgendaModel agenda)
         {
             using (IDbConnection connection = new MySqlConnection(_config.GetConnectionString("DefaultConnection")))
             {
@@ -132,7 +123,7 @@ namespace Plantilla_Agenda.Data
             }
         }
 
-        public List<Persona> GetProfesionales()
+        public IEnumerable<PersonaModel> GetProfesionales()
         {
             try
             {
@@ -141,12 +132,10 @@ namespace Plantilla_Agenda.Data
                     connection.Open();
 
                     // Utilizamos Dapper para mapear los resultados a objetos Persona
-                    string sql = "SELECT IdPersona, PrimerNombre, PrimerApellido FROM personas";
-                    var profesionales = connection.Query<Persona>(sql).ToList();
+                    connection.Open();
 
-                    connection.Close();
-
-                    return profesionales;
+                    const string sql = "SELECT IdPersona, PrimerNombre, PrimerApellido FROM personas";
+                    return connection.Query<PersonaModel>(sql);
                 }
             }
             catch (Exception ex)
@@ -156,7 +145,7 @@ namespace Plantilla_Agenda.Data
             }
         }
 
-        public List<Horario> ObtenerHorarios()
+        public IEnumerable<PersonaModel> GetHorarios()
         {
             try
             {
@@ -165,22 +154,21 @@ namespace Plantilla_Agenda.Data
                     connection.Open();
 
                     // Utilizamos Dapper para mapear los resultados a objetos Horario
-                    string sql = "SELECT IdHorario, HoraInicio, HoraFin FROM horarios";
-                    var horarios = connection.Query<Horario>(sql).ToList();
+                    connection.Open();
 
-                    connection.Close();
-
-                    return horarios;
+                    const string sql = "SELECT IdPersona, PrimerNombre, PrimerApellido FROM horarios";
+                    return connection.Query<PersonaModel>(sql);
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Error al obtener horarios: " + ex.Message);
+                Console.WriteLine("Error al obtener Horarios: " + ex.Message);
                 throw;
             }
         }
 
-        public List<Sede> ObtenerSedes()
+
+        public IEnumerable<PersonaModel> GetSedes()
         {
             try
             {
@@ -189,124 +177,80 @@ namespace Plantilla_Agenda.Data
                     connection.Open();
 
                     // Utilizamos Dapper para mapear los resultados a objetos Sede
-                    string sql = "SELECT IdSede, Direccion FROM sedes";
-                    var sedes = connection.Query<Sede>(sql).ToList();
+                    connection.Open();
 
-                    connection.Close();
-
-                    return sedes;
+                    const string sql = "SELECT IdPersona, PrimerNombre, PrimerApellido FROM sedes";
+                    return connection.Query<PersonaModel>(sql);
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Error al obtener sedes: " + ex.Message);
+                Console.WriteLine("Error al obtener Sedes: " + ex.Message);
                 throw;
             }
         }
-        // En la clase AgendaRepository
 
-        public List<Servicio> GetServicios()
+
+        public IEnumerable<PersonaModel> GetServicios()
         {
-            Console.WriteLine("Get servicios  : ");
-            const string sql = "SELECT IdServicio, Nombre, Descripcion, Duracion FROM servicios";
-
-            List<Servicio> servicios = new List<Servicio>();
-            using (var connection = new MySqlConnection(_config.GetConnectionString("DefaultConnection")))
+            try
             {
-                connection.Open();
-                using (var command = new MySqlCommand(sql, connection))
+                using (var connection = new MySqlConnection(_config.GetConnectionString("DefaultConnection")))
                 {
-                    using var reader = command.ExecuteReader();
-                    while (reader.Read())
-                    {
-                        var servicio = new Servicio
-                        {
-                            IdServicio = reader.GetInt32(0),
-                            Nombre = reader.GetString(1),
-                            Descripcion = reader.IsDBNull(2) ? string.Empty : reader.GetString(2),
-                            Duracion = reader.GetTimeSpan(3)
-                        };
-                        servicios.Add(servicio);
-                    }
+                    connection.Open();
+
+                    // Utilizamos Dapper para mapear los resultados a objetos Servicio
+                    connection.Open();
+
+                    const string sql = "SELECT IdPersona, PrimerNombre, PrimerApellido FROM servicios";
+                    return connection.Query<PersonaModel>(sql);
                 }
             }
-            Console.WriteLine("Fin Get servicios : ");
-            return servicios;
-        }
-
-        public List<AgendaCreateViewModel> GetCitasCliente(int idCliente)
-        {
-            Console.WriteLine("Get citas cliente  : ");
-            const string sql = "SELECT A.IdAgenda, A.Estado, S.Nombre AS Servicio, H.HoraInicio, H.HoraFin, A.IdProfesional " +
-                               "FROM agendas A " +
-                               "INNER JOIN horarios H ON A.IdHorario = H.IdHorario " +
-                               "INNER JOIN servicios S ON A.IdServicioAgendado = S.IdServicio " +
-                               "WHERE A.IdCliente = @IdCliente";
-
-            List<AgendaCreateViewModel> citas = new List<AgendaCreateViewModel>();
-            using (var connection = new MySqlConnection(_config.GetConnectionString("DefaultConnection")))
+            catch (Exception ex)
             {
-                connection.Open();
-                using (var command = new MySqlCommand(sql, connection))
-                {
-                    command.Parameters.AddWithValue("@IdCliente", idCliente);
-
-                    using var reader = command.ExecuteReader();
-                    while (reader.Read())
-                    {
-                        var cita = new AgendaCreateViewModel
-                        {
-                            IdAgenda = reader.GetInt32(0),
-                            Estado = reader.GetString(1),
-                            Servicio = reader.GetString(2),
-                            HoraInicio = reader.GetTimeSpan(3),
-                            HoraFin = reader.GetTimeSpan(4),
-                            IdProfesional = reader.GetInt32(5)
-                        };
-                        citas.Add(cita);
-                    }
-                }
+                Console.WriteLine("Error al obtener servicios: " + ex.Message);
+                throw;
             }
-            Console.WriteLine("Fin Get citas cliente : ");
-            return citas;
         }
 
-        public List<AgendaCreateViewModel> GetCitasProfesional(int idProfesional)
-        {
-            Console.WriteLine("Get citas profesional  : ");
-            const string sql = "SELECT A.IdAgenda, A.Estado, S.Nombre AS Servicio, H.HoraInicio, H.HoraFin, A.IdCliente " +
-                               "FROM agendas A " +
-                               "INNER JOIN horarios H ON A.IdHorario = H.IdHorario " +
-                               "INNER JOIN servicios S ON A.IdServicioAgendado = S.IdServicio " +
-                               "WHERE A.IdProfesional = @IdProfesional";
 
-            List<AgendaCreateViewModel> citas = new List<AgendaCreateViewModel>();
-            using (var connection = new MySqlConnection(_config.GetConnectionString("DefaultConnection")))
-            {
-                connection.Open();
-                using (var command = new MySqlCommand(sql, connection))
-                {
-                    command.Parameters.AddWithValue("@IdProfesional", idProfesional);
+        /*    string sql = "SELECT IdHorario, HoraInicio, HoraFin FROM horarios";
+     
+        string sql = "SELECT IdSede, Direccion FROM sedes";
+ 
+const string sql = "SELECT IdServicio, Nombre, Descripcion, Duracion FROM servicios";
+         
+const string sql = "SELECT A.IdAgenda, A.Estado, S.Nombre AS Servicio, H.HoraInicio, H.HoraFin, A.IdProfesional " +
+                   "FROM agendas A " +
+                   "INNER JOIN horarios H ON A.IdHorario = H.IdHorario " +
+                   "INNER JOIN servicios S ON A.IdServicioAgendado = S.IdServicio " +
+                   "WHERE A.IdCliente = @IdCliente";
 
-                    using var reader = command.ExecuteReader();
-                    while (reader.Read())
-                    {
-                        var cita = new AgendaCreateViewModel
-                        {
-                            IdAgenda = reader.GetInt32(0),
-                            Estado = reader.GetString(1),
-                            Servicio = reader.GetString(2),
-                            HoraInicio = reader.GetTimeSpan(3),
-                            HoraFin = reader.GetTimeSpan(4),
-                            IdCliente = reader.GetInt32(5)
-                        };
-                        citas.Add(cita);
-                    }
-                }
-            }
-            Console.WriteLine("Fin Get citas profesional : ");
-            return citas;
-        }
+
+     
+const string sql = "SELECT A.IdAgenda, A.Estado, S.Nombre AS Servicio, H.HoraInicio, H.HoraFin, A.IdCliente " +
+                   "FROM agendas A " +
+                   "INNER JOIN horarios H ON A.IdHorario = H.IdHorario " +
+                   "INNER JOIN servicios S ON A.IdServicioAgendado = S.IdServicio " +
+                   "WHERE A.IdProfesional = @IdProfesional";
+        
+         
+         SELECT
+    A.IdAgenda,
+    A.Estado,
+    CONCAT(P.PrimerNombre, ' ', P.PrimerApellido) AS ProfesionalNombre,
+    S.Nombre AS SedeNombre,
+    Se.Nombre AS ServicioNombre,
+    CONCAT(C.PrimerNombre, ' ', C.PrimerApellido) AS ClienteNombre,
+    H.FechaInicio AS FechaInicio,
+    H.HoraInicio AS HoraInicio
+FROM
+    agendas A
+INNER JOIN profesionales P ON A.IdProfesional = P.IdPersona
+INNER JOIN sedes S ON A.IdSede = S.IdSede
+INNER JOIN servicios Se ON A.IdServicio = Se.IdServicio
+INNER JOIN horarios H ON A.IdHorario = H.IdHorario
+LEFT JOIN personas C ON A.IdCliente = C.IdPersona;*/
 
     }
 }

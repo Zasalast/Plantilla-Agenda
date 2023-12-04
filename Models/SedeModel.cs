@@ -1,15 +1,15 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
-
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 namespace Plantilla_Agenda.Models
 {
-    public class Servicio
+    public class SedeModel
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int IdServicio { get; set; }
+        public int IdSede { get; set; }
+        public string Direccion { get; set; }
         public string Nombre { get; set; }
-        public string Descripcion { get; set; }
+        public string Telefono { get; set; }
         public TimeSpan Duracion { get; set; }
         public string Estado { get; set; }
     }

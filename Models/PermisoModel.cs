@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Plantilla_Agenda.Models
 {
-    public class Permiso
+    public class PermisoModel
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]

@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Plantilla_Agenda.Models
 {
-    public class Asistencia
+    public class AsistenciaModel
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
