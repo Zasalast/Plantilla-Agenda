@@ -3,27 +3,36 @@ using Microsoft.AspNetCore.Mvc;
 using MySql.Data.MySqlClient;
 using Plantilla_Agenda.Data;
 using Plantilla_Agenda.Models;
+using Plantilla_Agenda.Repositories;
+using System;
+using System.Collections.Generic;
 
 namespace Plantilla_Agenda.Controllers
 {
     public class AgendamientoController : Controller
     {
-        private readonly ContextoDB Conexiondb;
-
-        public AgendamientoController(ContextoDB contexto)
+        private readonly ContextoDB _contexto;
+        AgendamientoRepository _agendamientoRepository;
+        public AgendamientoController(ContextoDB contexto, AgendamientoRepository agendamientoRepository)
         {
-            Conexiondb = contexto;
+            _agendamientoRepository = agendamientoRepository;
+            _contexto = contexto;
         }
+
         // GET: AgendamientoController
         public ActionResult Index()
         {
-            return View();
+            // Retrieve all agendamientos from the database
+            List<Agendamiento> agendamientos = _agendamientoRepository.GetAgendamientos().ToList();
+            return View(agendamientos);
         }
 
         // GET: AgendamientoController/Details/5
         public ActionResult Details(int id)
         {
-            return View();
+            // Retrieve the agendamiento with the specified ID from the database
+            Agendamiento agendamiento = _agendamientoRepository.GetAgendamientoById(id);
+            return View(agendamiento);
         }
 
         // GET: AgendamientoController/Create
@@ -32,54 +41,21 @@ namespace Plantilla_Agenda.Controllers
             return View();
         }
 
-        // GET: AgendaController/List
-        public ActionResult List()
-        {
-            return View();
-        }
         // POST: AgendamientoController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(Models.Agendamiento agendamiento)
+        public ActionResult Create(Agendamiento agendamiento)
         {
-            
             try
             {
-                using (var connection = new MySqlConnection(Conexiondb.Conexiondb))
-                {
-                    connection.Open();
-                    string sql = "INSERT INTO agendamientos (IdCliente, Fecha, Hora, Estado, IdAgenda)\r\nVALUES (@IdCliente, @Fecha, @Hora, @Estado, @IdAgenda);";
+                // Save the new agendamiento to the database
+                _agendamientoRepository.CrearAgendamiento(agendamiento);
 
-                     
-                    var command = new MySqlCommand(sql, connection);
-                    /* command.Parameters.AddWithValue("@IdCliente", agendamiento.IdCliente);
-                     command.Parameters.AddWithValue("@Fecha", agendamiento.Fecha);
-                     command.Parameters.AddWithValue("@Hora", agendamiento.Hora);
-                     command.Parameters.AddWithValue("@Estado", agendamiento.Estado);
-                     command.Parameters.AddWithValue("@IdAgenda", agendamiento.IdAgenda);
-                    */
-
-                    command.Parameters.AddWithValue("@IdCliente", "1");
-                    command.Parameters.AddWithValue("@Fecha", "'2023-12-01'");
-                    command.Parameters.AddWithValue("@Hora", "'09:00:00'");
-                    command.Parameters.AddWithValue("@Estado", "'v'");
-                    command.Parameters.AddWithValue("@IdAgenda", "2");
-                    int rowsAffected = command.ExecuteNonQuery();
-                    if (rowsAffected > 0)
-                    {
-
-                        Console.WriteLine("El servicio se creo correctamente");
-                    }
-                    connection.Close();
-
-                    return RedirectToAction("Index", "home");
-
-                }
+                return RedirectToAction("Index");
             }
             catch (Exception ex)
             {
-                Console.WriteLine("El servicio no se creo correctamente");
-                TempData["El servicio se no se Creo"] = ex.Message;
+                TempData["ErrorMessage"] = "Failed to create agendamiento: " + ex.Message;
                 return View();
             }
         }
@@ -87,24 +63,26 @@ namespace Plantilla_Agenda.Controllers
         // GET: AgendamientoController/Edit/5
         public ActionResult Edit(int id)
         {
-            
-
-            return View();
+            // Retrieve the agendamiento with the specified ID from the database
+            Agendamiento agendamiento = _agendamientoRepository.GetAgendamientoById(id);
+            return View(agendamiento);
         }
 
         // POST: AgendamientoController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public ActionResult Edit(int id, Agendamiento updatedAgendamiento)
         {
             try
             {
-                String sql = "UPDATE agendamientos SET Estado = 'c' WHERE IdAgendamiento = 3;"; 
-                String sql2 = "DELETE FROM agendamientos\r\nWHERE IdAgendamiento = 4;";
-                return RedirectToAction(nameof(Index));
+                // Update the agendamiento in the database
+                _agendamientoRepository.UpdateAgendamiento(id, updatedAgendamiento);
+
+                return RedirectToAction("Index");
             }
-            catch
+            catch (Exception ex)
             {
+                TempData["ErrorMessage"] = "Failed to update agendamiento: " + ex.Message;
                 return View();
             }
         }
@@ -112,7 +90,9 @@ namespace Plantilla_Agenda.Controllers
         // GET: AgendamientoController/Delete/5
         public ActionResult Delete(int id)
         {
-            return View();
+            // Retrieve the agendamiento with the specified ID from the database
+            Agendamiento agendamiento = _agendamientoRepository.GetAgendamientoById(id);
+            return View(agendamiento);
         }
 
         // POST: AgendamientoController/Delete/5
@@ -122,10 +102,14 @@ namespace Plantilla_Agenda.Controllers
         {
             try
             {
-                return RedirectToAction(nameof(Index));
+                // Delete the agendamiento from the database
+                _agendamientoRepository.DeleteAgendamiento(id);
+
+                return RedirectToAction("Index");
             }
-            catch
+            catch (Exception ex)
             {
+                TempData["ErrorMessage"] = "Failed to delete agendamiento: " + ex.Message;
                 return View();
             }
         }

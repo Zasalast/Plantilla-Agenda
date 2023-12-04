@@ -1,26 +1,31 @@
-﻿@model Persona
-@{
-    ViewData["Title"] = "Inicio Sesion";
-}
-@{
+﻿@model Plantilla_Agenda.Models.LoginViewModel
+
+<h2>Iniciar Sesión</h2>
+
+@if (ViewData["Error"] != null)
+{
+    <div class="alert alert-danger" role="alert">
+        @ViewData["Error"]
+    </div>
 }
 
+<form asp-controller="Cuenta" asp-action="Login" method="post">
+    <div class="form-group">
+        <label asp-for="NombreUsuario"></label>
+        <input asp-for="NombreUsuario" class="form-control" />
+        <span asp-validation-for="NombreUsuario" class="text-danger"></span>
+    </div>
 
-<form method="post" asp-action="Login" asp-controller="Cuenta">
-    <h1 class="h3 mb-3">Inicio de sesion</h1>
-    <div class="form-floating">
-        <input type="text" class="form-control" required asp-for="Identificacion" />
-        <label for="floatingInput">Usuario</label>
+    <div class="form-group">
+        <label asp-for="ClaveHash"></label>
+        <input asp-for="ClaveHash" type="password" class="form-control" />
+        <span asp-validation-for="ClaveHash" class="text-danger"></span>
     </div>
-    <div class="form-floating">
-        <input type="password" class="form-control" required asp-for="Identificacion" />
-        <label for="floatingPassword">Password</label>
+
+    <div class="form-group form-check">
+        <input asp-for="Recordarme" class="form-check-input" />
+        <label class="form-check-label" asp-for="Recordarme">Recordarme</label>
     </div>
-    <div class=" checkbox mb-3">
-        <label>
-            <input type="checkbox" asp-for="MantenerActivo" /> Recordar sesion
-        </label>
-    </div>
-    <button type="submit" class="btn-lg btn-primary">Ingresar</button>
-    <label class="alert-danger">@ViewBag.Error</label>
+
+    <button type="submit" class="btn btn-primary">Iniciar Sesión</button>
 </form>

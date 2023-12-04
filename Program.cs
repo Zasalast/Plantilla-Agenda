@@ -1,6 +1,4 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
 using Plantilla_Agenda.Data;
 using Plantilla_Agenda.Repositories;
 
@@ -54,8 +52,8 @@ app.MapControllerRoute(
 
 // Rutas específicas para Servicios
 app.MapControllerRoute(
-    name: "Servicios",
-    pattern: "Servicios/{action}/{id?}",
+    name: "Servicio",
+    pattern: "Servicio/{action}/{id?}",
     defaults: new { controller = "Servicios" });
 
 app.Run();

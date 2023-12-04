@@ -11,7 +11,6 @@ namespace Plantilla_Agenda.Models
         public string EstadoAsistencia { get; set; }
         public int? IdAgendamiento { get; set; }
 
-        // Propiedades de navegación
-        public Agendamiento Agendamiento { get; set; }
+      
     }
 }

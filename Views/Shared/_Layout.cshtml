@@ -25,11 +25,11 @@
         new { Name = "Index", Pattern = "Agenda" }
         }*@;
         @{
-            var controllers = new[] { "Agenda", "Agendamiento","Servicios" };
+            var controllers = new[] { "Agenda", "Agendamiento","Servicio" };
             var actions = new Dictionary<string, string[]>
         {
         { "Agenda", new[] { "Create", "List", "index" } },
-        { "Servicios", new[] { "Create" , "List"} },
+        { "Servicio", new[] { "Create" , "List"} },
         { "Agendamiento", new[] { "Create",   "List" } }
         // Add more controllers and actions as needed
         };

@@ -12,9 +12,7 @@ namespace Plantilla_Agenda.Models
         public int? IdCliente { get; set; }
         public string Estado { get; set; }
         public DateTime? FechaHora { get; set; }
-
-        // Propiedades de navegación
-        public Persona Cliente { get; set; }
+ 
 
     }
 }

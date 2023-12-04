@@ -1,9 +1,10 @@
 ﻿@model AgendaCreateViewModel
+
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Crear Agenda";
 }
 
-<h1>Create</h1>
+<h1>Crear Agenda</h1>
 
 <div class="row">
     <div class="col-md-4">
@@ -21,6 +22,7 @@
             <span asp-validation-for="IdServicio" class="text-danger"></span>
 
             <select asp-for="IdHorario" class="form-control" asp-items="Model.Horarios">
+                ```html
                 <option value="">-- Seleccione un horario --</option>
             </select>
             <span asp-validation-for="IdHorario" class="text-danger"></span>
