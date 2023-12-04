@@ -9,30 +9,39 @@ namespace Plantilla_Agenda.Repositories
 {
     public class PersonaRepository
     { //utilizará Dapper y ADO.NET puro:
-        private readonly string _connectionString;
+        private readonly IConfiguration _config;
 
-    public PersonaRepository(IConfiguration configuration)
+        public PersonaRepository(IConfiguration config)
     {
-        _connectionString = configuration.GetConnectionString("Conexiondb");
-    }
+            _config = config;
+        }
 
     public List<Persona> ObtenerPersonas()
     {
-        using IDbConnection db = new MySqlConnection(_connectionString);
+        using IDbConnection db = new MySqlConnection(_config.GetConnectionString("DefaultConnection"));
         string query = "SELECT * FROM personas";
         return db.Query<Persona>(query).AsList();
     }
 
-    public Persona ObtenerPersonaPorId(int id)
-    {
-        using IDbConnection db = new MySqlConnection(_connectionString);
-        string query = "SELECT * FROM personas WHERE IdPersona = @Id";
-        return db.QueryFirstOrDefault<Persona>(query, new { Id = id });
-    }
+        public Persona ObtenerPersonaPorId(int id)
+        {
+            using IDbConnection db = new MySqlConnection(_config.GetConnectionString("DefaultConnection"));
+            string query = "SELECT * FROM personas WHERE IdPersona = @Id";
+            return db.QueryFirstOrDefault<Persona>(query, new { Id = id });
+        }
+        public string ObtenerNombrePersonaPorId(int id)
+        {
+            using (IDbConnection db = new MySqlConnection(_config.GetConnectionString("DefaultConnection")))
+            {
+                string query = "SELECT PrimerNombre FROM personas WHERE IdPersona = @Id";
+                return db.QueryFirstOrDefault<string>(query, new { Id = id });
+            }
+        }
+
 
         public void RegistrarPersonaPorAdmin(Persona persona)
         {
-            using (var connection = new MySqlConnection(_connectionString))
+            using (var connection = new MySqlConnection(_config.GetConnectionString("DefaultConnection")))
             {
                 connection.Execute("RegistrarPersonaPorAdmin",
                   new

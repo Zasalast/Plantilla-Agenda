@@ -1,34 +1,33 @@
-﻿// ServicioController.cs
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Plantilla_Agenda.Models;
 using Plantilla_Agenda.Repositories;
-using System;
 
 namespace Plantilla_Agenda.Controllers
 {
-    public class ServicioController : Controller
+    public class SedeController : Controller
     {
-        private readonly ServicioRepository _servicioRepository;
+        private readonly SedeRepository _sedeRepository;
 
-        public ServicioController(ServicioRepository servicioRepository)
+        public SedeController(SedeRepository sedeRepository)
         {
-            _servicioRepository = servicioRepository;
+            _sedeRepository = sedeRepository;
         }
 
         public ActionResult Index()
         {
-            var servicios = _servicioRepository.ObtenerServicios();
+            var servicios = _sedeRepository.ObtenerSede();
             return View(servicios);
         }
         public ActionResult List()
         {
-            var servicios = _servicioRepository.ObtenerServicios();
+            var servicios = _sedeRepository.ObtenerSede();
             return View(servicios);
         }
 
         public ActionResult Details(int id)
         {
-            var servicio = _servicioRepository.ObtenerServicioPorId(id);
+            var servicio = _sedeRepository.ObtenerSedePorId(id);
             return View(servicio);
         }
 
@@ -39,46 +38,46 @@ namespace Plantilla_Agenda.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(Servicio servicio)
+        public ActionResult Create(Sede sede)
         {
             try
             {
-                _servicioRepository.CrearServicio(servicio);
+                _sedeRepository.CrearSede(sede);
                 return RedirectToAction("Index");
             }
             catch (Exception ex)
             {
-                TempData["ErrorMessage"] = "Failed to create servicio: " + ex.Message;
+                TempData["ErrorMessage"] = "Failed to create sede: " + ex.Message;
                 return View();
             }
         }
 
         public ActionResult Edit(int id)
         {
-            var servicio = _servicioRepository.ObtenerServicioPorId(id);
-            return View(servicio);
+            var sede = _sedeRepository.ObtenerSedePorId(id);
+            return View(sede);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, Servicio updatedServicio)
+        public ActionResult Edit(int id, Sede updated)
         {
             try
             {
-                _servicioRepository.ActualizarServicio(updatedServicio);
+                _sedeRepository.ActualizarSede(updated);
                 return RedirectToAction("Index");
             }
             catch (Exception ex)
             {
-                TempData["ErrorMessage"] = "Failed to update servicio: " + ex.Message;
+                TempData["ErrorMessage"] = "Failed to update sede: " + ex.Message;
                 return View();
             }
         }
 
         public ActionResult Delete(int id)
         {
-            var servicio = _servicioRepository.ObtenerServicioPorId(id);
-            return View(servicio);
+            var sede = _sedeRepository.ObtenerSedePorId(id);
+            return View(sede);
         }
 
         [HttpPost]
@@ -87,12 +86,12 @@ namespace Plantilla_Agenda.Controllers
         {
             try
             {
-                _servicioRepository.EliminarServicio(id);
+                _sedeRepository.EliminarSede(id);
                 return RedirectToAction("Index");
             }
             catch (Exception ex)
             {
-                TempData["ErrorMessage"] = "Failed to delete servicio: " + ex.Message;
+                TempData["ErrorMessage"] = "Failed to delete sede: " + ex.Message;
                 return View();
             }
         }

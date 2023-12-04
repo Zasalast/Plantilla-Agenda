@@ -25,5 +25,7 @@ namespace Plantilla_Agenda.Models
         public int? IdSedeAgendada { get; set; }
 
         public int? IdServicioAgendado { get; set; }
+        [NotMapped]
+        public string? NombreCliente { get; set; }
     }
 }

@@ -9,23 +9,37 @@
     </div>
 }
 
-<form asp-controller="Cuenta" asp-action="Login" method="post">
+<form asp-controller="usuario" asp-action="login" method="post">
     <div class="form-group">
         <label asp-for="NombreUsuario"></label>
-        <input asp-for="NombreUsuario" class="form-control" />
+        <input asp-for="NombreUsuario" class="form-control"/>
         <span asp-validation-for="NombreUsuario" class="text-danger"></span>
     </div>
 
     <div class="form-group">
         <label asp-for="ClaveHash"></label>
-        <input asp-for="ClaveHash" type="password" class="form-control" />
+        <input asp-for="ClaveHash" type="password" class="form-control"/>
         <span asp-validation-for="ClaveHash" class="text-danger"></span>
     </div>
 
     <div class="form-group form-check">
-        <input asp-for="Recordarme" class="form-check-input" />
+        <input asp-for="Recordarme" class="form-check-input"/>
         <label class="form-check-label" asp-for="Recordarme">Recordarme</label>
     </div>
 
     <button type="submit" class="btn btn-primary">Iniciar Sesión</button>
 </form>
+<!-- En la vista o en el layout compartido -->
+@if (TempData.ContainsKey("Mensaje"))
+{
+    <script>
+        alert("@TempData["Mensaje"]");
+    </script>
+}
+@if (TempData.ContainsKey("MensajeError"))
+{
+    <script>
+        alert("@TempData["MensajeError"]");
+    </script>
+}
+

@@ -27,6 +27,18 @@
             <th>
                 @Html.DisplayNameFor(model => model.IdProfesional)
             </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Estado)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IdCliente)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IdSedeAgendada)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IdServicioAgendado)
+            </th>
             <th></th>
         </tr>
     </thead>
@@ -50,9 +62,21 @@
                     @Html.DisplayFor(modelItem => item.IdProfesional)
                 </td>
                 <td>
-                    @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
-                    @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
-                    @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+                    @Html.DisplayFor(modelItem => item.Estado)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.IdCliente)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.IdSedeAgendada)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.IdServicioAgendado)
+                </td>
+                <td>
+                    @Html.ActionLink("Edit", "Edit", new {   id=item.IdAgenda   }) |
+                    @Html.ActionLink("Details", "Details", new {  id=item.IdAgenda  }) |
+                    @Html.ActionLink("Delete", "Delete", new {   id=item.IdAgenda  })
                 </td>
             </tr>
         }

@@ -49,6 +49,8 @@ namespace Plantilla_Agenda.Models
         public int IdUsuario { get; set; }
 
         public string? UserName { get; set; }
+        public string? Estado { get; set; }
+        public string? Servicio { get; set; }
 
         public SelectList? Sedes { get; set; }
 
@@ -57,6 +59,7 @@ namespace Plantilla_Agenda.Models
         public SelectList? Horarios { get; set; }
 
         public SelectList? Personas { get; set; }
+      
 
         public string NombreSede { get; set; }
 

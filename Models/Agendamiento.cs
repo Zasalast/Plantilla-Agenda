@@ -1,6 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
+﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Plantilla_Agenda.Models
 {
@@ -12,7 +13,12 @@ namespace Plantilla_Agenda.Models
         public int? IdCliente { get; set; }
         public string Estado { get; set; }
         public DateTime? FechaHora { get; set; }
- 
 
+        // Property to hold the name of the client
+        [NotMapped]
+        public string? NombreCliente { get; set; }
+
+        // Other properties and methods remain unchanged
+        // ...
     }
 }

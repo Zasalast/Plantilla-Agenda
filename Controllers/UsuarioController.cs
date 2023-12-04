@@ -2,92 +2,101 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using MySql.Data.MySqlClient;
-using System.Data;
-using System.Security.Claims;
- 
-
 using Plantilla_Agenda.Models;
-using Microsoft.AspNetCore.Authorization; 
-using Plantilla_Agenda.Servicios;
-using System.ComponentModel.DataAnnotations;
-using Plantilla_Agenda.Data;
 using Plantilla_Agenda.Repositories;
+using Plantilla_Agenda.Servicios;
+using System.Security.Claims;
+
 namespace Plantilla_Agenda.Controllers
 {
+    [Route("usuario")]
+    [Authorize]
     public class UsuarioController : Controller
-    { //utilizará Dapper y ADO.NET puro:
-
+    {
         private readonly UsuarioRepository _usuarioRepository;
-        private readonly PersonaRepository _personaRepository;
+        private readonly AuthenticationsService _authenticationsService;
 
-        public UsuarioController(UsuarioRepository usuarioRepository, PersonaRepository personaRepository)
+        public UsuarioController(UsuarioRepository usuarioRepository, AuthenticationsService authenticationsService)
         {
             _usuarioRepository = usuarioRepository;
-            _personaRepository = personaRepository;
+            _authenticationsService = authenticationsService;
         }
+
+        [HttpGet("index")]
         public IActionResult Index()
         {
             return View();
         }
 
+        [HttpGet("registro-persona")]
         public IActionResult RegistroPersona()
         {
             return View();
         }
 
-
-
+        [HttpGet("login")]
         public IActionResult Login()
         {
-            ClaimsPrincipal c = HttpContext.User;
-            if (c.Identity != null)
-            {
-                if (c.Identity.IsAuthenticated)
-                    return RedirectToAction("Index", "Home");
-            }
             return View();
         }
 
-        [HttpPost]
-        public IActionResult Login(string usuario, string clave)
+        [HttpPost("login")]
+        public IActionResult Login(LoginViewModel model)
         {
-            var user = _usuarioRepository.ObtenerUsuarioPorNombreUsuario(usuario);
-            if (user != null && user.ClaveHash == clave)
+            if (ModelState.IsValid)
             {
-                // Login exitoso
-                return RedirectToAction("Index");
-            }
-            else
+                if (_authenticationsService.AuthenticateUser(model.NombreUsuario, model.ClaveHash))
+                {
+                    // Iniciar sesión correctamente
+                    var claims = new List<Claim>
             {
-                // Mostrar error en login
-                return View();
+                new Claim(ClaimTypes.Name, model.NombreUsuario),
+                // Puedes agregar más claims según tus necesidades
+            };
+
+                    var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                    var principal = new ClaimsPrincipal(identity);
+
+                    HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
+
+                    // Mensaje de alerta de inicio de sesión correcto
+                    TempData["Mensaje"] = "Inicio de sesión exitoso.";
+
+                    return RedirectToAction("Index", "Usuario"); // Redirigir a la página de inicio de usuario
+                }
+                else
+                {
+                    ModelState.AddModelError(string.Empty, "Nombre de usuario o contraseña incorrectos.");
+                }
             }
+
+            // Mensaje de alerta en caso de error
+            TempData["MensajeError"] = "Error al iniciar sesión. Verifica tus credenciales.";
+
+            return View(model);
         }
+
+
+
         [HttpPost("registrar-admin")]
         public IActionResult RegistrarAdmin(Persona persona)
         {
-            _personaRepository.RegistrarPersonaPorAdmin(persona);
+            // Utiliza un servicio o repositorio dedicado para el registro de persona
+            // _personaRepository.RegistrarPersonaPorAdmin(persona);
             return Ok();
         }
 
-        [Authorize]
+        [HttpGet("actualizacion")]
         public IActionResult Actualizacion()
         {
             return View();
         }
-        
-             private readonly ContextoDB _Conexiondb;
-        public UsuarioController(ContextoDB Conexiondb)
+
+        [HttpGet("logout")]
+        public IActionResult Logout()
         {
-            _Conexiondb = Conexiondb;
+            HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            return RedirectToAction("Index", "Home");
         }
-       
-
-       
-
-
-
-
     }
 }

@@ -9,16 +9,16 @@ namespace Plantilla_Agenda.Repositories
 {
     public class ServicioRepository
     {
-        private readonly string _connectionString;
+        private readonly IConfiguration _config;
 
-        public ServicioRepository(string connectionString)
+        public ServicioRepository(IConfiguration config)
         {
-            _connectionString = connectionString;
+            _config = config;
         }
 
         public List<Servicio> ObtenerServicios()
         {
-            using (var connection = new MySqlConnection(_connectionString))
+            using (var connection = new MySqlConnection(_config.GetConnectionString("DefaultConnection")))
             {
                 var sql = "SELECT * FROM servicios";
                 return connection.Query<Servicio>(sql).AsList();
@@ -27,7 +27,7 @@ namespace Plantilla_Agenda.Repositories
 
         public Servicio ObtenerServicioPorId(int id)
         {
-            using (var connection = new MySqlConnection(_connectionString))
+            using (var connection = new MySqlConnection(_config.GetConnectionString("DefaultConnection")))
             {
                 var sql = "SELECT * FROM servicios WHERE IdServicio = @IdServicio";
                 return connection.QueryFirstOrDefault<Servicio>(sql, new { IdServicio = id });
@@ -36,7 +36,7 @@ namespace Plantilla_Agenda.Repositories
 
         public void CrearServicio(Servicio servicio)
         {
-            using (var connection = new MySqlConnection(_connectionString))
+            using (var connection = new MySqlConnection(_config.GetConnectionString("DefaultConnection")))
             {
                 var sql = "INSERT INTO servicios (Nombre, Descripcion, Duracion, Estado) VALUES (@Nombre, @Descripcion, @Duracion, @Estado)";
                 connection.Execute(sql, servicio);
@@ -45,7 +45,7 @@ namespace Plantilla_Agenda.Repositories
 
         public void ActualizarServicio(Servicio servicio)
         {
-            using (var connection = new MySqlConnection(_connectionString))
+            using (var connection = new MySqlConnection(_config.GetConnectionString("DefaultConnection")))
             {
                 var sql = "UPDATE servicios SET Nombre = @Nombre, Descripcion = @Descripcion, Duracion = @Duracion, Estado = @Estado WHERE IdServicio = @IdServicio";
                 connection.Execute(sql, servicio);
@@ -54,7 +54,7 @@ namespace Plantilla_Agenda.Repositories
 
         public void EliminarServicio(int id)
         {
-            using (var connection = new MySqlConnection(_connectionString))
+            using (var connection = new MySqlConnection(_config.GetConnectionString("DefaultConnection")))
             {
                 var sql = "DELETE FROM servicios WHERE IdServicio = @IdServicio";
                 connection.Execute(sql, new { IdServicio = id });

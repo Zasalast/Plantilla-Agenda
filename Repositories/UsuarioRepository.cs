@@ -10,32 +10,38 @@ namespace Plantilla_Agenda.Repositories
 {
     public class UsuarioRepository
     { //utilizará Dapper y ADO.NET puro:
-        private readonly string _connectionString;
+        private readonly IConfiguration _config;
 
-        public UsuarioRepository(string connectionString)
+        public UsuarioRepository(IConfiguration config)
         {
-            _connectionString = connectionString;
+            _config = config;
         }
 
         public Usuario ObtenerUsuarioPorNombreUsuario(string nombreUsuario)
         {
-           
+            using (var connection = new MySqlConnection(_config.GetConnectionString("DefaultConnection")))
+            {
+                // Execute the query to obtain the user by username
+                return connection.QueryFirstOrDefault<Usuario>(
+                    "SELECT * FROM usuario WHERE NombreUsuario = @NombreUsuario",
+                    new { NombreUsuario = nombreUsuario });
+            }
 
             return null;
         }
-        public Usuario IniciarSesion(string usuario, string password)
+        public Usuario IniciarSesion(string nombreUsuario, string clave)
         {
-            using (var connection = new MySqlConnection(_connectionString))
+            using (var connection = new MySqlConnection(_config.GetConnectionString("DefaultConnection")))
             {
                 return connection.QueryFirstOrDefault<Usuario>(
-                  "IniciarSesion",
-                  new { InNombreUsuario = usuario, InClave = password },
-                  commandType: CommandType.StoredProcedure);
+                    "IniciarSesion",
+                    new { InNombreUsuario = nombreUsuario, InClave = clave },
+                    commandType: CommandType.StoredProcedure);
             }
         }
         public void RegistrarUsuario(Usuario usuario)
         {
-            using (var connection = new MySqlConnection(_connectionString))
+            using (var connection = new MySqlConnection(_config.GetConnectionString("DefaultConnection")))
             {
                 connection.Execute("RegistrarUsuario", new
                 {
@@ -50,7 +56,7 @@ namespace Plantilla_Agenda.Repositories
 
         public void EliminarUsuario(int idUsuario)
         {
-            using (var connection = new MySqlConnection(_connectionString))
+            using (var connection = new MySqlConnection(_config.GetConnectionString("DefaultConnection")))
             {
                 connection.Execute("EliminarUsuario", new
                 {
@@ -61,7 +67,7 @@ namespace Plantilla_Agenda.Repositories
 
         public void ActualizarUsuario(Usuario usuario)
         {
-            using (var connection = new MySqlConnection(_connectionString))
+            using (var connection = new MySqlConnection(_config.GetConnectionString("DefaultConnection")))
             {
                 connection.Execute("ActualizarUsuario", new
                 {
