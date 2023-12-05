@@ -16,68 +16,45 @@
                 @Html.DisplayNameFor(model => model.IdAgenda)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.NombreSede)
+                @Html.DisplayNameFor(model => model.IdSede)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.NombreServicio)
+                @Html.DisplayNameFor(model => model.IdServicio)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.HoraInicio)
+                @Html.DisplayNameFor(model => model.IdHorario)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.PrimerNombreProfesional)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Estado)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.PrimerNombreProfesional)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.IdSedeAgendada)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.IdServicioAgendado)
+                @Html.DisplayNameFor(model => model.IdProfesional)
             </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.IdAgenda)
-            </td>
-            <td>
-                    @Html.DisplayFor(modelItem => item.NombreSede)
-            </td>
-            <td>
-                    @Html.DisplayFor(modelItem => item.NombreServicio)
-            </td>
-            <td>
-                    @Html.DisplayFor(modelItem => item.HoraInicio)
-            </td>
-            <td>
-                    @Html.DisplayFor(modelItem => item.PrimerNombreProfesional)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Estado)
-            </td>
-            <td>
-                    @Html.DisplayFor(modelItem => item.PrimerNombreProfesional)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IdSedeAgendada)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IdServicioAgendado)
-            </td>
-            <td>
-                @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
-            </td>
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.IdAgenda)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.IdSede)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.IdServicio)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.IdHorario)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.IdProfesional)
+                </td>
+                <td>
+                    @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
+                    @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
+                    @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+                </td>
+            </tr>
+        }
     </tbody>
 </table>

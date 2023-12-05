@@ -1,17 +1,14 @@
-﻿@model IEnumerable<AgendaListVistaModelo>
+﻿@model IEnumerable<Plantilla_Agenda.Models.AgendaModel>
 
-@using Plantilla_Agenda.Models // Add this if necessary
-@using Microsoft.AspNetCore.Html // Add this if necessary
 @{
-    ViewData["Title"] = "List";
+    ViewData["Title"] = "Index";
 }
 
-<h1>List</h1>
+<h1>Index</h1>
 
 <p>
     <a asp-action="Create">Create New</a>
 </p>
-
 <table class="table">
     <thead>
         <tr>
@@ -19,22 +16,16 @@
                 @Html.DisplayNameFor(model => model.IdAgenda)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.ClienteNombre)
+                @Html.DisplayNameFor(model => model.IdSede)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.NombreSede)
+                @Html.DisplayNameFor(model => model.IdServicio)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.SedeDireccion)
+                @Html.DisplayNameFor(model => model.IdHorario)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.NombreServicio)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.FechaInicio)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.HoraInicio)
+                @Html.DisplayNameFor(model => model.IdProfesional)
             </th>
             <th></th>
         </tr>
@@ -47,22 +38,16 @@
                     @Html.DisplayFor(modelItem => item.IdAgenda)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.ClienteNombre)
+                    @Html.DisplayFor(modelItem => item.IdSede)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.NombreSede)
+                    @Html.DisplayFor(modelItem => item.IdServicio)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.SedeDireccion)
+                    @Html.DisplayFor(modelItem => item.IdHorario)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.NombreServicio)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.FechaInicio)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.HoraInicio)
+                    @Html.DisplayFor(modelItem => item.IdProfesional)
                 </td>
                 <td>
                     @Html.ActionLink("Edit", "Edit", new { id = item.IdAgenda }) |

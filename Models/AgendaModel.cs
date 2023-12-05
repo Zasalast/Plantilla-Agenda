@@ -48,6 +48,9 @@ namespace Plantilla_Agenda.Models
         public DateTime? HoraInicio { get; set; }
 
         public string? SedeDireccion { get; set; }
-     
+        public List<SedeModel>? Sedes { get; set; }
+        public List<ServicioModel>? Servicioss { get; set; }
+        public List<HorarioModel>? Horarios { get; set; }
+        public List<PersonaModel>? Personas { get; set; }
     }
 }

@@ -1,38 +1,103 @@
-﻿ 
-@using Microsoft.AspNetCore.Mvc.Rendering
-@model AgendaCreateViewModel
+﻿@model Plantilla_Agenda.Models.AgendaModel
 
-<!-- Resto del código de la vista -->
 
-<div class="form-group">
-    <div class="form-group">
-        <label>Servicio:</label>
+@{
+    ViewData["Title"] = "Create";
+}
 
-        <select asp-for="IdServicio" asp-items="Model.Servicios">
-            <option>-- Seleccionar --</option>
-        </select>
+<h1>Create</h1>
 
-        <span asp-validation-for="IdServicio"></span>
-    </div>
+<h4>Agenda</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-    <div class="form-group">
-        <label>Horario:</label>
+            <div class="form-group">
+                <label asp-for="Sedes" class="control-label"></label>
+                <select asp-for="IdSede" class="form-control">
+                    <option value="">Seleccione una sede...</option>
+                    @foreach (var sede in Model.Sedes)
+                    {
+                        <option value="@sede.IdSede">@sede.Direccion</option>
+                    }
+                </select>
+                <span asp-validation-for="IdSede" class="text-danger"></span>
+            </div>
 
-        <select asp-for="IdHorario" asp-items="Model.Horarios">
-            <option>-- Seleccionar --</option>
-        </select>
 
-        <span asp-validation-for="IdHorario"></span>
-    </div>
 
-    <div class="form-group">
-        <label>Sede:</label>
 
-        <select asp-for="IdSede" asp-items="Model.Sedes">
-            <option>-- Seleccionar --</option>
-        </select>
+            <div class="form-group">
+                <label asp-for="Horarios" class="control-label"></label>
+                <select asp-for="IdHorario" class="form-control">
+                    <option value="">Seleccione un Horario...</option>
+                    @foreach (var horarios in Model.Horarios)
+                    {
+                        <option value="@horarios.IdHorario">@horarios.HoraInicio</option>
+                    }
+                </select>
+                <span asp-validation-for="IdHorario" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Servicioss" class="control-label"></label>
+                <select asp-for="IdServicio" class="form-control">
+                    <option value="">Seleccione un servicio...</option>
+                    @foreach (var servicio in Model.Servicioss)
+                    {
+                        <option value="@servicio.IdServicio">@servicio.Nombre</option>
+                    }
+                </select>
+                <span asp-validation-for="IdServicio" class="text-danger"></span>
+            </div>
 
-        <span asp-validation-for="IdSede"></span>
+
+
+            <div class="form-group">
+                <label asp-for="IdProfesional" class="control-label"></label>
+                <select asp-for="IdProfesional" class="form-control">
+                    <option value="">Seleccione una persona...</option>
+                    @foreach (var persona in Model.Personas)
+                    {
+                        <option value="@persona.IdPersona">@persona.PrimerNombre</option>
+                    }
+                </select>
+                <span asp-validation-for="IdProfesional" class="text-danger"></span>
+            </div>
+            @* <div class="form-group">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <label asp-for="IdSede" class="control-label">Sede</label>
+            <select asp-for="IdSede" class="form-control" asp-items="@Model.Sedes.Select(s => new SelectListItem { Value = s.IdSede.ToString(), Text = s.Direccion })"></select>
+            </div>
+
+            <div class="form-group">
+            <label asp-for="IdServicio" class="control-label">Servicio</label>
+            <select asp-for="IdServicio" class="form-control" asp-items="@Model.Servicioss.Select(s => new SelectListItem { Value = s.IdServicio.ToString(), Text = s.Nombre })"></select>
+            </div>
+
+            <div class="form-group">
+            <label asp-for="IdHorario" class="control-label">Horario</label>
+            <select asp-for="IdHorario" class="form-control" asp-items="@Model.Horarios.Select(h => new SelectListItem { Value = h.IdHorario.ToString(), Text = ""+h.HoraInicio })"></select>
+            </div><div class="form-group">
+            <label asp-for="IdProfesional" class="control-label">Profesional</label>
+            <select asp-for="IdProfesional" class="form-control" asp-items="@Model.Personas.Select(p => new SelectListItem { Value = p.IdPersona.ToString(), Text = p.PrimerApellido})"></select>
+            </div>*@
+            <div class="form-group">
+                <span /> <span /><span />
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
     </div>
 </div>
 
+<div>
+    <a asp-action="Index" class="btn btn-secondary">Regresar</a>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

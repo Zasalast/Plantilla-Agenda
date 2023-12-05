@@ -1,194 +1,302 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using MySql.Data.MySqlClient;
 using Plantilla_Agenda.Data;
 using Plantilla_Agenda.Models;
-using Plantilla_Agenda.Repositories;
-using Plantilla_Agenda.Repositories;
-using System.Linq;
+
+
 namespace Plantilla_Agenda.Controllers
 {
     public class AgendaController : Controller
     {
-        private readonly AgendaRepository _agendaRepository;
+        private readonly ContextoDB Conexiondb;
 
-        private readonly PersonaRepository _personaRepository;
-
-        private readonly ServicioRepository _servicioRepository;
-
-        private readonly UsuarioRepository _usuarioRepository;
-
-        private readonly SedeRepository _sedeRepository;
-
-        public AgendaController(
-            AgendaRepository agendaRepository,
-            PersonaRepository personaRepository,
-            ServicioRepository servicioRepository,
-            UsuarioRepository usuarioRepository,
-            SedeRepository sedeRepository
-        )
+        public AgendaController(ContextoDB contexto)
         {
-            _agendaRepository = agendaRepository;
-            _personaRepository = personaRepository;
-            _servicioRepository = servicioRepository;
-            _usuarioRepository = usuarioRepository;
-            _sedeRepository = sedeRepository;
-        }
-        public IActionResult Create()
-        {
-            var sedes = _agendaRepository.GetSedes();
-            var servicios = _agendaRepository.GetServicios();
-            var horarios = _agendaRepository.GetHorarios();
-            var profesionales = _agendaRepository.GetProfesionales();
-
-            var model = new AgendaCreateViewModel
-            {
-                Sedes = new SelectList(sedes, "IdSede", "Direccion"),
-                Servicios = new SelectList(servicios, "IdServicio", "Nombre"),
-                Horarios = new SelectList(horarios, "IdHorario", "HoraInicio"),
-                Personas = new SelectList(profesionales, "IdPersona", "PrimerNombre"),
-            };
-
-            ViewBag.SelectSede = new SelectList(sedes, "IdSede", "Direccion");
-            ViewBag.SelectServicio = new SelectList(servicios, "IdServicio", "Nombre");
-            ViewBag.SelectHorario = new SelectList(horarios, "IdHorario", "HoraInicio");
-            ViewBag.SelectPersona = new SelectList(profesionales, "IdPersona", "PrimerNombre");
-
-            return View(model);
+            Conexiondb = contexto;
         }
 
         // GET: AgendaController
+        public ActionResult Index()
+        {
+            return View();
+        }
+
+        // GET: AgendaController/Details/5
+        public ActionResult Details(int id)
+        {
+            return View();
+        }
+
+        // GET: AgendaController/Create
+        public ActionResult Create()
+        {
+            try
+            {
+                var agenda = new AgendaModel
+                {
+                    Sedes = ObtenerSedes() ?? new List<SedeModel>(),
+                    Servicioss = ObtenerServicios() ?? new List<ServicioModel>(),
+                    Horarios = ObtenerHorarios() ?? new List<HorarioModel>(),
+                    Personas = ObtenerProfesionales() ?? new List<PersonaModel>()
+                };
+
+                return View(agenda);
+            }
+            catch (Exception ex)
+            {
+                // Manejar la excepción, puedes imprimir el error o registrar en un sistema de registro.
+                Console.WriteLine("Error en la acción Create: " + ex.Message);
+                return View(new AgendaModel()); // Otra opción sería redirigir a una página de error.
+            }
+        }
+
+        private List<SedeModel> ObtenerSedes()
+        {
+            List<SedeModel> sedes = new List<SedeModel>();
+
+            try
+            {
+                using (var connection = new MySqlConnection(Conexiondb.Conexiondb))
+                {
+                    connection.Open();
+                    String sql = "SELECT * FROM sedes;";
+                    var command = new MySqlCommand(sql, connection);
+
+                    using (var reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            var sede = new SedeModel
+                            {
+                                IdSede = Convert.ToInt32(reader["IdSede"]),
+                                Direccion = reader["Direccion"].ToString()
+                            };
+                            sedes.Add(sede);
+                        }
+                    }
+
+                    connection.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error al obtener sedes: " + ex.Message);
+                TempData["Error"] = ex.Message;
+            }
+
+            return sedes;
+        }
+
+        private List<ServicioModel> ObtenerServicios()
+        {
+            List<ServicioModel> servicios = new List<ServicioModel>();
+
+            try
+            {
+                using (var connection = new MySqlConnection(Conexiondb.Conexiondb))
+                {
+                    connection.Open();
+                    String sql = "SELECT * FROM servicios;";
+                    var command = new MySqlCommand(sql, connection);
+
+                    using (var reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            var servicio = new ServicioModel
+                            {
+                                IdServicio = Convert.ToInt32(reader["IdServicio"]),
+                                Nombre = reader["Nombre"].ToString()
+                            };
+                            servicios.Add(servicio);
+                        }
+                    }
+
+                    connection.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error al obtener servicios: " + ex.Message);
+                TempData["Error"] = ex.Message;
+            }
+
+            return servicios;
+        }
+
+        private List<HorarioModel> ObtenerHorarios()
+        {
+            List<HorarioModel> horarios = new List<HorarioModel>();
+
+            try
+            {
+                using (var connection = new MySqlConnection(Conexiondb.Conexiondb))
+                {
+                    connection.Open();
+                    String sql = "SELECT * FROM horarios;";
+                    var command = new MySqlCommand(sql, connection);
+
+                    using (var reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            var horario = new HorarioModel
+                            {
+                                IdHorario = Convert.ToInt32(reader["IdHorario"]),
+                                HoraInicio = TimeSpan.Parse(reader["HoraInicio"].ToString()),
+                                HoraFin = TimeSpan.Parse(reader["HoraFin"].ToString())
+                            };
+                            horarios.Add(horario);
+                        }
+                    }
+
+                    connection.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error al obtener horarios: " + ex.Message);
+                TempData["Error"] = ex.Message;
+            }
+
+            return horarios;
+        }
+
+        private List<PersonaModel> ObtenerProfesionales()
+        {
+            List<PersonaModel> profesionales = new List<PersonaModel>();
+
+            try
+            {
+                using (var connection = new MySqlConnection(Conexiondb.Conexiondb))
+                {
+                    connection.Open();
+                    String sql = "SELECT * FROM personas;";
+                    var command = new MySqlCommand(sql, connection);
+
+                    using (var reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            var profesional = new PersonaModel
+                            {
+                                IdPersona = Convert.ToInt32(reader["IdPersona"]),
+                                PrimerNombre = reader["PrimerNombre"].ToString(),
+                                PrimerApellido = reader["PrimerApellido"].ToString()
+                            };
+                            profesionales.Add(profesional);
+                        }
+                    }
+
+                    connection.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error al obtener profesionales: " + ex.Message);
+                TempData["Error"] = ex.Message;
+            }
+
+            return profesionales;
+        }
+
+        // GET: AgendaController/List
+        public ActionResult List()
+        {
+            return View();
+        }
+
+
+
+
+        // POST: AgendaController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(AgendaCreateViewModel model)
+        public ActionResult Create(Models.AgendaModel agenda)
         {
-            Console.WriteLine(" Controlador Agenda " + "Crear agenda ");
             try
             {
                 if (ModelState.IsValid)
                 {
-
-                    var agenda = new AgendaModel();
-                    Console.WriteLine(" Controlador Agenda " + " model" + model);
-                    agenda.IdSede = model.IdSede;
-                    agenda.IdServicio = model.IdServicio;
-                    agenda.IdHorario = model.IdHorario;
-                    agenda.IdProfesional = model.IdProfesional;
-
-                    int generatedId = _agendaRepository.Create(agenda);
-                    Console.WriteLine(" Controlador Agenda " + " model" + generatedId);
-                    if (generatedId > 0)
+                    using (var connection = new MySqlConnection(Conexiondb.Conexiondb))
                     {
-                        Console.WriteLine("La agenda se creó correctamente con ID: " + generatedId);
-                        return RedirectToAction("Index");
-                    }
-                    else
-                    {
-                        Console.WriteLine("La inserción en la base de datos no generó un ID válido.");
+                        connection.Open();
+
+                        // Ajusta esta consulta para que inserte los datos de la agenda con los Id seleccionados
+                        string sql = "INSERT INTO agendamientos (IdProfesional, IdHorario, IdSede,   IdServicio) " +
+                                     "VALUES (@IdProfesional, @IdHorario, @IdSede, @IdServicio)";
+
+                        var command = new MySqlCommand(sql, connection);
+                        command.Parameters.AddWithValue("@IdProfesional", agenda.IdProfesional);
+                        command.Parameters.AddWithValue("@IdHorario", agenda.IdHorario);
+                        command.Parameters.AddWithValue("@IdSede", agenda.IdSede);
+                        command.Parameters.AddWithValue("@IdServicio", agenda.IdServicio);
+
+
+                        int rowsAffected = command.ExecuteNonQuery();
+
+                        if (rowsAffected > 0)
+                        {
+                            Console.WriteLine("El servicio se creó correctamente");
+                        }
+
+                        connection.Close();
+                        return RedirectToAction(nameof(Index));
                     }
                 }
-                else
-                {
-                    Console.WriteLine("El modelo no es válido. ModelState tiene errores.");
-                }
-                Console.WriteLine(" Controlador Agenda " + "create: Recargar los datos para los select boxes");
-                // Recargar los datos para los select boxes
-                var sedes = _agendaRepository.GetSedes();
-                var servicios = _agendaRepository.GetServicios();
-                var horarios = _agendaRepository.GetHorarios();
-                var profesionales = _agendaRepository.GetProfesionales();
-                Console.WriteLine(" Controlador Agenda " + "create: model.Sedes = new SelectList(sedes, \"IdSede\", \"Direccion\");");
 
-                model.Sedes = new SelectList(sedes, "IdSede", "Direccion");
-                model.Servicios = new SelectList(servicios, "IdServicio", "Nombre");
-                model.Horarios = new SelectList(horarios, "IdHorario", "HoraInicio");
-                model.Personas = new SelectList(profesionales, "IdPersona", "PrimerNombre");
-                Console.WriteLine(" Controlador Agenda " + "create: ViewBag.SelectSede = new SelectList(sedes, \"IdSede\", \"Direccion\");");
-
-                ViewBag.SelectSede = new SelectList(sedes, "IdSede", "Direccion");
-                ViewBag.SelectServicio = new SelectList(servicios, "IdServicio", "Nombre");
-                ViewBag.SelectHorario = new SelectList(horarios, "IdHorario", "HoraInicio");
-                ViewBag.SelectPersona = new SelectList(profesionales, "IdPersona", "PrimerNombre");
-
-                return View(model);
+                // Si el modelo no es válido, vuelve a la vista con los errores
+                return View(agenda);
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Error en el controlador al intentar crear la agenda: " + ex.Message);
-                throw;
-                ViewBag.Message = "No hay agendas disponibles.";
+                Console.WriteLine("El servicio no se creó correctamente");
+                TempData["El servicio no se Creó"] = ex.Message;
                 return View();
             }
-            Console.WriteLine("Fin agenda ");
-
         }
-        // GET: AgendaController
-        public ActionResult Index()
+
+        // GET: AgendaController/Edit/5
+        public ActionResult Edit(int id)
         {
-            var agendas = _agendaRepository.ObtenerDetallesAgendas();
-        
-            // Verifica si hay datos en la lista de agendas
-            if (agendas != null)
-            {
-                // Pasa la lista de agendas a la vista
-                return View(agendas);
-            }
-            else
-            {
-                // Puedes agregar un mensaje o manejar el caso en que no hay agendas
-                ViewBag.Message = "No hay agendas disponibles.";
-                return View(); // Retorna la vista sin datos
-            }
+            return View();
         }
-       
-        public async Task<IActionResult> Details(int? id)
+
+        // POST: AgendaController/Edit/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Edit(int id, IFormCollection collection)
         {
-            if (id == null)
+            try
             {
-                return NotFound();
+                return RedirectToAction(nameof(Index));
             }
-
-            var agenda = await _agendaRepository.GetAgendaById(id.Value);
-
-            if (agenda == null)
+            catch
             {
-                return NotFound();
+                return View();
             }
-
-            return View(agenda);
         }
 
-        public async Task<IActionResult> List()
+        // GET: AgendaController/Delete/5
+        public ActionResult Delete(int id)
         {
-            //var agendas = await _agendaRepository.ObtenerDetallesAgendas();
-            var agendas = await _agendaRepository.GetAgendaList();
-            return View(agendas);
+            return View();
         }
-        public IEnumerable<AgendaListVistaModelo> GetAgendaList()
+
+        // POST: AgendaController/Delete/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Delete(int id, IFormCollection collection)
         {
-            // Logic to retrieve and map data to AgendaListVistaModelo objects
-            // Replace this with your actual data retrieval logic
-
-            var agendas = _agendaRepository.ObtenerDetallesAgendas();
-
-            // Map the data to AgendaListVistaModelo objects
-            var agendaList = agendas.Select(a => new AgendaListVistaModelo
+            try
             {
-                IdAgenda = a.IdAgenda,
-                ClienteNombre = a.Cliente.Nombre,
-                NombreSede = a.SedeAgendada.Nombre,
-                SedeDireccion = a.SedeAgendada.Direccion,
-                NombreServicio = a.ServicioAgendado.Nombre,
-                FechaInicio = a.FechaHoraInicio.ToString("yyyy-MM-dd"),
-                HoraInicio = a.FechaHoraInicio.ToString("HH:mm")
-            });
-
-            return agendaList;
+                return RedirectToAction(nameof(Index));
+            }
+            catch
+            {
+                return View();
+            }
         }
-        // En AgendaController
-
     }
 }
