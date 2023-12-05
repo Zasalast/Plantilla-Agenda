@@ -1,5 +1,7 @@
-﻿@model IEnumerable<Plantilla_Agenda.Models.AgendaModel>
+﻿@model IEnumerable<AgendaListVistaModelo>
 
+@using Plantilla_Agenda.Models // Add this if necessary
+@using Microsoft.AspNetCore.Html // Add this if necessary
 @{
     ViewData["Title"] = "List";
 }
@@ -9,6 +11,7 @@
 <p>
     <a asp-action="Create">Create New</a>
 </p>
+
 <table class="table">
     <thead>
         <tr>
@@ -16,28 +19,22 @@
                 @Html.DisplayNameFor(model => model.IdAgenda)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.IdSede)
+                @Html.DisplayNameFor(model => model.ClienteNombre)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.IdServicio)
+                @Html.DisplayNameFor(model => model.NombreSede)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.IdHorario)
+                @Html.DisplayNameFor(model => model.SedeDireccion)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.IdProfesional)
+                @Html.DisplayNameFor(model => model.NombreServicio)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Estado)
+                @Html.DisplayNameFor(model => model.FechaInicio)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.IdCliente)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.IdSedeAgendada)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.IdServicioAgendado)
+                @Html.DisplayNameFor(model => model.HoraInicio)
             </th>
             <th></th>
         </tr>
@@ -50,33 +47,27 @@
                     @Html.DisplayFor(modelItem => item.IdAgenda)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.IdSede)
+                    @Html.DisplayFor(modelItem => item.ClienteNombre)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.IdServicio)
+                    @Html.DisplayFor(modelItem => item.NombreSede)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.IdHorario)
+                    @Html.DisplayFor(modelItem => item.SedeDireccion)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.IdProfesional)
+                    @Html.DisplayFor(modelItem => item.NombreServicio)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Estado)
+                    @Html.DisplayFor(modelItem => item.FechaInicio)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.IdCliente)
+                    @Html.DisplayFor(modelItem => item.HoraInicio)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.IdSedeAgendada)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.IdServicioAgendado)
-                </td>
-                <td>
-                    @Html.ActionLink("Edit", "Edit", new {   id=item.IdAgenda   }) |
-                    @Html.ActionLink("Details", "Details", new {  id=item.IdAgenda  }) |
-                    @Html.ActionLink("Delete", "Delete", new {   id=item.IdAgenda  })
+                    @Html.ActionLink("Edit", "Edit", new { id = item.IdAgenda }) |
+                    @Html.ActionLink("Details", "Details", new { id = item.IdAgenda }) |
+                    @Html.ActionLink("Delete", "Delete", new { id = item.IdAgenda })
                 </td>
             </tr>
         }
