@@ -3,6 +3,7 @@ using Plantilla_Agenda.Data;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using static Org.BouncyCastle.Math.EC.ECCurve;
 
 namespace Plantilla_Agenda.Servicios
 {
@@ -10,11 +11,13 @@ namespace Plantilla_Agenda.Servicios
     {
         private MySqlConnection _conexion;
         private readonly ContextoDB _contextoDB;
-
-        public ConfiguracionDB(ContextoDB contextoDB)
+        private readonly IConfiguration _config;
+ 
+        public ConfiguracionDB(ContextoDB contextoDB, IConfiguration config)
         {
+             
             _contextoDB = contextoDB;
-            _conexion = new MySqlConnection(_contextoDB.Conexiondb);
+            _conexion = new MySqlConnection(config.GetConnectionString("DefaultConnection"));
         }
 
         public bool Conectar()

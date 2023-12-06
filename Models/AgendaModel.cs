@@ -26,7 +26,7 @@ namespace Plantilla_Agenda.Models
 
         public int? IdServicioAgendado { get; set; }
 
-        [NotMapped]
+        
         public string? PrimerNombreCliente { get; set; }
 
         public string? ProfesionalNombre { get; set; }
@@ -52,5 +52,11 @@ namespace Plantilla_Agenda.Models
         public List<ServicioModel>? Servicioss { get; set; }
         public List<HorarioModel>? Horarios { get; set; }
         public List<PersonaModel>? Personas { get; set; }
+        public PersonaModel? Profesional { get; set; }
+        public SedeModel? Sede { get; set; }
+        public HorarioModel? Horario { get; set; }
+        public ServicioModel? Servicio { get; set; }
+
+
     }
 }

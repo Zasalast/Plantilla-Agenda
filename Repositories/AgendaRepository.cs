@@ -1,121 +1,55 @@
-﻿using System.Collections.Generic;
-using System.Data;
-using System;
-using System.Threading.Tasks;
-using Dapper;
-using Microsoft.Extensions.Configuration;
-using MySql.Data.MySqlClient;
+﻿using MySql.Data.MySqlClient;
+using Plantilla_Agenda.Data;
 using Plantilla_Agenda.Models;
+using System.Collections.Generic;
+using static Org.BouncyCastle.Math.EC.ECCurve;
 
-namespace Plantilla_Agenda.Data
+namespace Plantilla_Agenda.Repositories
 {
-    public interface IAgendaRepository
-    {
-        Task<List<AgendaModel>> ObtenerDetallesAgendas();
-        Task<AgendaModel> ObtenerDetallesAgendasPorId(int id);
-
-        Task<AgendaModel> ObtenerDetallesAgendaPorId(int id);
-        Task Create(AgendaModel agenda);
-        Task UpdateAgenda(AgendaModel model);
-        Task Delete(int id);
-        Task Cancelar(int id, string reason);
-        Task<List<AgendaListVistaModelo>> GetAgendaList();
-    }
     public class AgendaRepository
     {
+        //private readonly ContextoDB _contextoDB;
+        private readonly string _connectionString;
+
         private readonly IConfiguration _config;
 
         public AgendaRepository(IConfiguration config)
         {
             _config = config;
         }
-        public async Task CreateAgenda(CreateAgendaModel model)
-        {
-            // 1. Validate model
-
-            // 2. Check slot availability
-
-            // 3. Map model to entity
-
-            // 4. Add to repository
-        }
-
-        public async Task<AgendaModel> GetAgendaById(int id)
-        {
-            using (
-                var connection =
-                    new MySqlConnection(_config
-                            .GetConnectionString("DefaultConnection"))
-            )
-            {
-                connection.Open();
-                var agenda =
-                    await connection
-                        .QueryFirstOrDefaultAsync
-                        <AgendaModel
-                        >("SELECT * FROM agendas WHERE IdAgenda = @IdAgenda",
-                        new { IdAgenda = id });
-                return agenda;
-            
-        }
-        }
-        public async Task<List<AgendaListVistaModelo>> GetAgendaList()
-        {
-            using (var connection = new MySqlConnection(_config.GetConnectionString("DefaultConnection")))
-            {
-                connection.Open();
-
-                // Llamada a procedimiento almacenado con Dapper
-                var result = await connection.QueryAsync<AgendaListVistaModelo>(
-                     "NombreDeTuProcedimientoAlmacenado",
-                    commandType: CommandType.StoredProcedure
-                );
-
-                return result.ToList();
-            }
-        }
-
         public int Create(AgendaModel agenda)
         {
-            using (
-                var connection =
-                    new MySqlConnection(_config
-                            .GetConnectionString("DefaultConnection"))
-            )
-            {
-                connection.Open();
-                var sql =
-                    "INSERT INTO agendas (IdSede, IdServicio, IdHorario, IdProfesional) VALUES (@IdSede, @IdServicio, @IdHorario, @IdProfesional); SELECT LAST_INSERT_ID();";
-                return connection.QueryFirstOrDefault<int>(sql, agenda);
-            }
-        }
-
-        public int Create2(AgendaModel agenda)
-        {
+            Console.WriteLine("Entrando a create Repository agenda ");
             try
             {
-                using (
-                    var connection =
-                        new MySqlConnection(_config
-                                .GetConnectionString("DefaultConnection"))
-                )
+                using (var connection = new MySqlConnection(_config.GetConnectionString("DefaultConnection")))
                 {
-                    var parameters =
-                        new {
-                            IdProfesional = agenda.IdProfesional,
-                            IdHorario = agenda.IdHorario,
-                            IdSede = agenda.IdSede,
-                            IdServicio = agenda.IdServicio
-                        };
+                    connection.Open();
+                    Console.WriteLine("La Creo la conexion correctamente  : ");
 
-                    const string
-                        sql
-                        =
-                        "INSERT INTO agendas (IdProfesional, IdHorario, IdSede, IdServicio) " +
-                        "VALUES (@IdProfesional, @IdHorario, @IdSede, @IdServicio);" +
-                        "SELECT LAST_INSERT_ID();";
+                    string sql = "INSERT INTO agendas (IdProfesional, IdHorario, IdSede, IdServicio) " +
+                                 "VALUES (@IdProfesional, @IdHorario, @IdSede, @IdServicio);" +
+                                 "SELECT LAST_INSERT_ID();";  // Esta línea devuelve el ID generado
+                    Console.WriteLine("El script utilizado es  : " + sql);
+                    var command = new MySqlCommand(sql, connection);
+                    Console.WriteLine("se va a iniciar la configuracion de datos  : ");
+                    command.Parameters.AddWithValue("@IdProfesional", agenda.IdProfesional);
+                    command.Parameters.AddWithValue("@IdHorario", agenda.IdHorario);
+                    command.Parameters.AddWithValue("@IdSede", agenda.IdSede);
+                    command.Parameters.AddWithValue("@IdServicio", agenda.IdServicio);
+                    Console.WriteLine("Se agregaron los datos y se van a convertir  : ");
+                    // Ejecuta la consulta y obtiene el ID generado
+                    int generatedId = Convert.ToInt32(command.ExecuteScalar());
 
-                    return connection.ExecuteScalar<int>(sql, parameters);
+                    if (generatedId > 0)
+                    {
+                        Console.WriteLine("La agenda se creó correctamente con ID: " + generatedId);
+                    }
+
+                    connection.Close();
+                    Console.WriteLine("La cerror la conexion correctamente  : ");
+                    // Retorna el ID generado en la base de datos
+                    return generatedId;
                 }
             }
             catch (Exception ex)
@@ -125,133 +59,128 @@ namespace Plantilla_Agenda.Data
             }
         }
 
-        public List<AgendaModel> ObtenerDetallesAgenda()
+
+        // AgendaRepository
+
+        public List<PersonaModel> GetProfesionales()
         {
-            int idAgenda = 0;
-            string Estado = "";
-            string ProfesionalNombre = "";
-            string SedeDireccion = "";
-            string ServicioNombre = "";
-            string HorarioInicio = "";
-            string HorarioFin = "";
-            string idPersona = "";
-            string idSede = "";
-            string idServicio = "";
-            string idHorario = "";
+            Console.WriteLine("Get Profesionales  : ");
+            List<PersonaModel> profesionales = new List<PersonaModel>();
+            const string sql = "SELECT IdPersona, PrimerNombre, PrimerApellido FROM personas";
 
-            using (
-                var connection =
-                    new MySqlConnection(_config
-                            .GetConnectionString("DefaultConnection"))
-            )
-            {
-                connection.Open();
-
-                var parameters = new DynamicParameters();
-                parameters.Add("p_IdAgenda", idAgenda);
-                parameters.Add("p_Estado", Estado);
-                parameters.Add("p_PrimerNombre", ProfesionalNombre);
-                parameters.Add("p_Direccion", SedeDireccion);
-                parameters.Add("p_Nombre", ServicioNombre);
-                parameters.Add("HoraInicio ", HorarioInicio);
-                parameters.Add("HoraFin ", HorarioFin);
-                parameters.Add("IdProfesional ", idPersona);
-                parameters.Add("IdSede", idSede);
-                parameters.Add("IdServicio", idServicio);
-                parameters.Add("IdHorario", idHorario);
-
-                // Llamada a procedimiento almacenado con Dapper
-                var result =
-                    connection
-                        .Query<AgendaDetailsModel>("ObtenerDetallesAgenda",
-                        parameters,
-                        commandType: CommandType.StoredProcedure);
-
-
-                return (List<AgendaModel>)result;
-            }
-        }
-        public List<AgendaModel> ObtenerDetallesAgendaPorId(int idAgenda)
-        {
-            string Estado = "";
-            string ProfesionalNombre = "";
-            string SedeDireccion = "";
-            string ServicioNombre = "";
-            string HorarioInicio = "";
-            string HorarioFin = "";
-            string idPersona = "";
-            string idSede = "";
-            string idServicio = "";
-            string idHorario = "";
-
-            using (
-                var connection =
-                    new MySqlConnection(_config
-                            .GetConnectionString("DefaultConnection"))
-            )
-            {
-                connection.Open();
-
-                var parameters = new DynamicParameters();
-                parameters.Add("p_IdAgenda", idAgenda);
-                parameters.Add("p_Estado", Estado);
-                parameters.Add("p_PrimerNombre", ProfesionalNombre);
-                parameters.Add("p_Direccion", SedeDireccion);
-                parameters.Add("p_Nombre", ServicioNombre);
-                parameters.Add("HoraInicio ", HorarioInicio);
-                parameters.Add("HoraFin ", HorarioFin);
-                parameters.Add("IdProfesional ", idPersona);
-                parameters.Add("IdSede", idSede);
-                parameters.Add("IdServicio", idServicio);
-                parameters.Add("IdHorario", idHorario);
-
-                // Llamada a procedimiento almacenado con Dapper
-                var result =
-                    connection
-                        .Query<AgendaModel>("ObtenerDetallesAgendaPorId(@idAgenda)",
-                        parameters,
-                        commandType: CommandType.StoredProcedure);
-
-                return result.ToList();
-            }
-        }
-
-        public async Task<List<AgendaModel>> ObtenerDetallesAgendas()
-        {
             using (var connection = new MySqlConnection(_config.GetConnectionString("DefaultConnection")))
             {
                 connection.Open();
+                using (var command = new MySqlCommand(sql, connection))
+                {
 
-                // Use Dapper to get agenda details
-                var agendas = await connection.QueryAsync<AgendaModel>(@"
-                SELECT
-                    A.IdAgenda,
-                    A.Estado,
-                    CONCAT(P.PrimerNombre, ' ', P.PrimerApellido) AS ProfesionalNombre,
-                    S.Nombre AS NombreSede,
-                    Se.Nombre AS NombreServicio,
-                    CONCAT(C.PrimerNombre, ' ', C.PrimerApellido) AS PrimerNombreCliente,
-                    H.FechaInicio,
-                    H.HoraInicio
-                FROM
-                    Agenda A
-                INNER JOIN Profesional P ON A.IdProfesional = P.IdProfesional
-                INNER JOIN Sede S ON A.IdSede = S.IdSede
-                INNER JOIN Servicio Se ON A.IdServicio = Se.IdServicio
-                INNER JOIN Horario H ON A.IdHorario = H.IdHorario
-                LEFT JOIN Cliente C ON A.IdCliente = C.IdCliente
-            ");
-
-                return agendas.ToList();
+                    using var reader = command.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        var persona = new PersonaModel
+                        {
+                            IdPersona = reader.GetInt32(0),
+                            PrimerNombre = reader.GetString(1),
+                            PrimerApellido = reader.GetString(2)
+                        };
+                        profesionales.Add(persona);
+                    }
+                }
             }
+            Console.WriteLine("Fin Get profesional : ");
+            return profesionales;
+        }
+
+        public List<HorarioModel> GetHorarios()
+        {
+            Console.WriteLine("Get horarios  : ");
+            List<HorarioModel> horarios = new List<HorarioModel>();
+            const string sql = "SELECT IdHorario, HoraInicio, HoraFin FROM horarios";
+            using (var connection = new MySqlConnection(_config.GetConnectionString("DefaultConnection")))
+            {
+                connection.Open();
+                using (var command = new MySqlCommand(sql, connection))
+                {
+                    using (var reader = command.ExecuteReader())
+                        while (reader.Read())
+                        {
+                            var horario = new HorarioModel
+                            {
+                                IdHorario = reader.GetInt32(0),
+                                HoraInicio = reader.GetTimeSpan(1),
+                                HoraFin = TimeSpan.Parse(reader.GetString(2))
+                            };
+                            horarios.Add(horario);
+                        }
+                }
+            }
+            Console.WriteLine("fin horaios  : ");
+            return horarios;
+        }
+
+        public List<SedeModel> GetSedes()
+        {
+            Console.WriteLine("Get sedes  : ");
+            const string sql = "SELECT IdSede, Direccion  FROM sedes";
+
+            List<SedeModel> sedes = new List<SedeModel>();
+            using (var connection = new MySqlConnection(_config.GetConnectionString("DefaultConnection")))
+            {
+                connection.Open();
+                using (var command = new MySqlCommand(sql, connection))
+                {
+
+                    using var reader = command.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        var sede = new SedeModel
+                        {
+                            IdSede = reader.GetInt32(0),
+                            Direccion = reader.GetString(1)
+                        };
+                        sedes.Add(sede);
+                    }
+                }
+            }
+            Console.WriteLine("fin get sedes : ");
+            return sedes;
+            // Similar para sedes
+        }
+
+        public List<ServicioModel> GetServicios()
+        {
+            Console.WriteLine("Get servicios  : ");
+            const string sql = "SELECT IdServicio, Nombre  FROM servicios";
+
+            List<ServicioModel> servicios = new List<ServicioModel>();
+            using (var connection = new MySqlConnection(_config.GetConnectionString("DefaultConnection")))
+            {
+                connection.Open();
+                using (var command = new MySqlCommand(sql, connection))
+                {
+                    using var reader = command.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        var servicio = new ServicioModel
+                        {
+                            IdServicio = reader.GetInt32(0),
+                            Nombre = reader.GetString(1)
+                        };
+                        servicios.Add(servicio);
+                    }
+                }
+            }
+            Console.WriteLine("fin servicios  : ");
+            return servicios;
+
+            // Similar para servicios
         }
         public List<AgendaModel> GetAllAgendas()
         {
             List<AgendaModel> agendas = new List<AgendaModel>();
             const string sql = "SELECT IdAgenda, IdProfesional, IdHorario, IdSede, IdServicio FROM agendas";
 
-            using (var connection = new MySqlConnection(_config
-                            .GetConnectionString("DefaultConnection")))
+            using (var connection = new MySqlConnection(_config.GetConnectionString("DefaultConnection")))
             {
                 connection.Open();
                 using (var command = new MySqlCommand(sql, connection))
@@ -273,229 +202,51 @@ namespace Plantilla_Agenda.Data
             }
             return agendas;
         }
-      
-        public void Update(AgendaModel agenda)
+
+        public List<AgendaModel> GetAllAgendasWithDetails()
         {
-            using (
-                var connection =
-                    new MySqlConnection(_config
-                            .GetConnectionString("DefaultConnection"))
-            )
-            {
-                connection.Open();
-                var sql =
-                    "UPDATE agendas SET IdSede = @IdSede, IdServicio = @IdServicio, IdHorario = @IdHorario, IdProfesional = @IdProfesional WHERE IdAgenda = @IdAgenda";
-                connection.Execute (sql, agenda);
-            }
-        }
+            PersonaModel Profesional;
+            List<AgendaModel> agendas = new List<AgendaModel>();
+            const string sql = "SELECT a.IdAgenda, a.IdProfesional, a.IdHorario, a.IdSede, a.IdServicio, " +
+                               "p.PrimerNombre AS PrimerNombre, " +
+                               "s.Direccion AS Direccion, " +
+                               "se.Nombre AS Nombre, " +
+                               "h.HoraInicio AS HoraInicio " +
+                               "FROM agendas a " +
+                               "INNER JOIN profesionales p ON a.IdProfesional = p.IdPersona " +
+                               "INNER JOIN sedes s ON a.IdSede = s.IdSede " +
+                               "INNER JOIN servicios se ON a.IdServicio = se.IdServicio " +
+                               "INNER JOIN horarios h ON a.IdHorario = h.IdHorario";
 
-        public void Delete(int idAgenda)
-        {
-            using (
-                var connection =
-                    new MySqlConnection(_config
-                            .GetConnectionString("DefaultConnection"))
-            )
-            {
-                connection.Open();
-                var sql = "DELETE FROM agendas WHERE IdAgenda = @IdAgenda";
-                connection.Execute(sql, new { IdAgenda = idAgenda });
-            }
-        }
-
-        public void Agendara(
-            int idProfesional,
-            int idHorario,
-            int idCliente,
-            int idSede,
-            int idServicio
-        )
-        {
-            using (
-                var connection =
-                    new MySqlConnection(_config
-                            .GetConnectionString("DefaultConnection"))
-            )
-            {
-                connection
-                    .Execute("Agendar",
-                    new {
-                        p_IdProfesional = idProfesional,
-                        p_IdHorario = idHorario,
-                        p_IdCliente = idCliente,
-                        p_IdSedeAgendada = idSede,
-                        p_IdServicioAgendado = idServicio
-                    },
-                    commandType: CommandType.StoredProcedure);
-            }
-        }
-
-        public void Cancelar(int idAgenda, string motivo)
-        {
-            using (
-                var connection =
-                    new MySqlConnection(_config
-                            .GetConnectionString("DefaultConnection"))
-            )
-            {
-                connection
-                    .Execute("Cancelar",
-                    new { p_IdAgenda = idAgenda, p_Motivo = motivo },
-                    commandType: CommandType.StoredProcedure);
-            }
-        }
-
-        public List<PersonaModel> GetProfesionales()
-        {
-            try
-            {
-                using (
-                    var connection =
-                        new MySqlConnection(_config
-                                .GetConnectionString("DefaultConnection"))
-                )
-                {
-                    connection.Open();
-
-                    // Utilizamos Dapper para mapear los resultados a objetos Persona
-                    const string
-                        sql
-                        =
-                        "SELECT IdPersona, PrimerNombre, PrimerApellido FROM personas";
-                    return (List<PersonaModel>)connection.Query<PersonaModel>(sql);
-                }
-            }
-            catch (Exception ex)
-            {
-                Console
-                    .WriteLine("Error al obtener profesionales: " + ex.Message);
-                throw;
-            }
-        }
-
-        public List<PersonaModel> GetHorarios()
-        {
-            try
-            {
-                using (
-                    var connection =
-                        new MySqlConnection(_config
-                                .GetConnectionString("DefaultConnection"))
-                )
-                {
-                    connection.Open();
-
-                    // Utilizamos Dapper para mapear los resultados a objetos Horario
-                    const string
-                        sql
-                        =
-                        "SELECT HoraInicio, HoraFin, FechaInicio,Disponibilidad FROM horarios";
-                    return (List<PersonaModel>)connection.Query<PersonaModel>(sql);
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Error al obtener Horarios: " + ex.Message);
-                throw;
-            }
-        }
-
-        public List<PersonaModel> GetSedes()
-        {
-            try
-            {
-                using (
-                    var connection =
-                        new MySqlConnection(_config
-                                .GetConnectionString("DefaultConnection"))
-                )
-                {
-                    connection.Open();
-
-                    // Utilizamos Dapper para mapear los resultados a objetos Sede
-                    const string
-                        sql = "SELECT IdSede, Direccion, Nombre FROM sedes";
-                    return (List<PersonaModel>)connection.Query<PersonaModel>(sql);
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Error al obtener Sedes: " + ex.Message);
-                throw;
-            }
-        }
-
-        public List<PersonaModel> GetServicios()
-        {
-            try
-            {
-                using (
-                    var connection =
-                        new MySqlConnection(_config
-                                .GetConnectionString("DefaultConnection"))
-                )
-                {
-                    connection.Open();
-
-                    // Utilizamos Dapper para mapear los resultados a objetos Servicio
-                    const string
-                        sql
-                        =
-                        "SELECT Nombre, Descripcion, Estado FROM servicios";
-                    return (List<PersonaModel>)connection.Query<PersonaModel>(sql);
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Error al obtener servicios: " + ex.Message);
-                throw;
-            }
-        }
-        public async Task<IEnumerable<AgendaModel>> ObtenerAgendass()
-        {
             using (var connection = new MySqlConnection(_config.GetConnectionString("DefaultConnection")))
             {
                 connection.Open();
-                var agendas = await connection.QueryAsync<AgendaModel>("SELECT * FROM agendas");
-                return agendas;
+                using (var command = new MySqlCommand(sql, connection))
+                {
+                    
+                    using var reader = command.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        var agenda = new AgendaModel
+                        {
+                            IdAgenda = reader.GetInt32(0),
+                            IdProfesional = reader.GetInt32(1),
+                            IdHorario = reader.GetInt32(2),
+                            IdSede = reader.GetInt32(3),
+                            IdServicio = reader.GetInt32(4),
+                            Profesional = new PersonaModel { PrimerNombre = reader.GetString(5) },
+                            Sede = new SedeModel { Direccion = reader.GetString(6) },
+                            Servicio = new ServicioModel { Nombre = reader.GetString(7) },
+                            Horario = new HorarioModel { HoraInicio = reader.GetTimeSpan(8) }
+                        }; 
+                        agendas.Add(agenda);
+                    }
+                }
             }
+            return agendas;
         }
-        /*    string sql = "SELECT IdHorario, HoraInicio, HoraFin FROM horarios";
-     
-        string sql = "SELECT IdSede, Direccion FROM sedes";
- 
-const string sql = "SELECT IdServicio, Nombre, Descripcion, Duracion FROM servicios";
-         
-const string sql = "SELECT A.IdAgenda, A.Estado, S.Nombre AS Servicio, H.HoraInicio, H.HoraFin, A.IdProfesional " +
-                   "FROM agendas A " +
-                   "INNER JOIN horarios H ON A.IdHorario = H.IdHorario " +
-                   "INNER JOIN servicios S ON A.IdServicioAgendado = S.IdServicio " +
-                   "WHERE A.IdCliente = @IdCliente";
 
 
-     
-const string sql = "SELECT A.IdAgenda, A.Estado, S.Nombre AS Servicio, H.HoraInicio, H.HoraFin, A.IdCliente " +
-                   "FROM agendas A " +
-                   "INNER JOIN horarios H ON A.IdHorario = H.IdHorario " +
-                   "INNER JOIN servicios S ON A.IdServicioAgendado = S.IdServicio " +
-                   "WHERE A.IdProfesional = @IdProfesional";
-        
-         
-         SELECT
-    A.IdAgenda,
-    A.Estado,
-    CONCAT(P.PrimerNombre, ' ', P.PrimerApellido) AS ProfesionalNombre,
-    S.Nombre AS SedeNombre,
-    Se.Nombre AS ServicioNombre,
-    CONCAT(C.PrimerNombre, ' ', C.PrimerApellido) AS ClienteNombre,
-    H.FechaInicio AS FechaInicio,
-    H.HoraInicio AS HoraInicio
-FROM
-    agendas A
-INNER JOIN profesionales P ON A.IdProfesional = P.IdPersona
-INNER JOIN sedes S ON A.IdSede = S.IdSede
-INNER JOIN servicios Se ON A.IdServicio = Se.IdServicio
-INNER JOIN horarios H ON A.IdHorario = H.IdHorario
-LEFT JOIN personas C ON A.IdCliente = C.IdPersona;*/
     }
+
 }
